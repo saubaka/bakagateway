@@ -43,7 +43,19 @@
       {% endfor %}
       {% if current_user.has_permission('admin.access') %}<a href="{{ url_for('admin.dashboard') }}">{{ icon('settings') }}<span><strong>管理员后台</strong><small>管理账号、平台与全站主题</small></span></a>{% endif %}
     </nav>
+    <div class="drawer__identity">
+      {{ user_avatar(current_user, 'drawer-identity-avatar') }}
+      <div><strong>{{ current_user.display_name }}</strong><small>@{{ current_user.username }}</small></div>
+      <form method="post" action="{{ url_for('auth.logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="button button--soft button--small" type="submit">{{ icon('arrow') }}<span>退出登录</span></button></form>
+    </div>
   </aside>
+
+  <nav class="mobile-capsule-bar is-nav-arriving" data-bottom-capsule aria-label="个人中心快捷导航">
+    <a class="{{ 'is-current' if request.endpoint == 'portal.dashboard' }}" href="{{ url_for('portal.dashboard') }}">{{ icon('home') }}<span>我的主页</span></a>
+    <a class="{{ 'is-current' if request.endpoint == 'portal.profile' }}" href="{{ url_for('portal.profile') }}">{{ icon('person') }}<span>资料</span></a>
+    <a class="{{ 'is-current' if request.endpoint == 'portal.security' }}" href="{{ url_for('portal.security') }}">{{ icon('check') }}<span>安全</span></a>
+    <button type="button" data-mobile-drawer aria-controls="mobile-drawer" aria-expanded="false">{{ icon('menu') }}<span>更多</span></button>
+  </nav>
 
   <main class="page-shell portal-page" id="main-content">{% block app_content %}{% endblock %}</main>
   <footer class="site-footer site-footer--configured">

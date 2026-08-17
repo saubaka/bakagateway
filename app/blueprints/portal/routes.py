@@ -7,7 +7,7 @@ from flask_login import current_user, login_required
 
 from app.blueprints.portal import portal_bp
 from app.extensions import db
-from app.forms import EmptyForm, ProfileForm, TwoFactorForm
+from app.forms import ChangeEmailRequestForm, EmptyForm, ProfileForm, TwoFactorForm
 from app.models import (
     AuditLog,
     GatewayClient,
@@ -189,7 +189,6 @@ def profile():
         "portal/profile.html",
         profile_form=ProfileForm(obj=current_user),
         empty_form=EmptyForm(),
-        email_verification_enabled=effective_email_features()["profile_verification"],
     )
 
 
@@ -290,6 +289,9 @@ def security():
         totp_form=TwoFactorForm(),
         empty_form=EmptyForm(),
         qr_version=current_user.totp_secret[-8:],
+        change_email_form=ChangeEmailRequestForm(),
+        email_verification_enabled=effective_email_features()["profile_verification"],
+        email_change_enabled=effective_email_features()["profile_verification"],
     )
 
 

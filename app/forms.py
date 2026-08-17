@@ -211,7 +211,6 @@ class ProfileForm(FlaskForm):
         ],
     )
     display_name = StringField("显示名称", validators=[DataRequired(), Length(min=2, max=80)])
-    email = StringField("邮箱", validators=EMAIL_VALIDATORS)
     avatar = FileField("头像图片")
     remove_avatar = BooleanField("移除当前头像")
     submit = SubmitField("保存资料")
@@ -464,7 +463,7 @@ class ConsentConfirmationForm(AuthorizationRequestForm):
 class ChangeEmailRequestForm(FlaskForm):
     """Request code for new email verification."""
 
-    new_email = StringField("新邮箱", validators=[DataRequired(), Length(max=254)])
+    new_email = StringField("新邮箱", validators=EMAIL_VALIDATORS)
     submit = SubmitField("发送验证码")
 
 

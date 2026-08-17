@@ -270,11 +270,12 @@
   let drawerTrigger = null;
   const drawerFocusables = () => [...(mobileDrawer?.querySelectorAll("a[href],button:not([disabled]),input:not([disabled]),[tabindex]:not([tabindex='-1'])") || [])].filter((item) => item.offsetParent !== null);
   const setPortalInert = (value) => {
-    doc.querySelectorAll(".site-header,.portal-page,.site-footer").forEach((item) => { item.inert = value; });
+    doc.querySelectorAll(".site-header,.portal-page,.site-footer,.mobile-capsule-bar").forEach((item) => { item.inert = value; });
   };
   const setDrawer = (open, trigger = null) => {
     window.clearTimeout(drawerTimer);
     if (open) drawerTrigger = trigger || doc.activeElement;
+    if (!open && mobileDrawer?.contains(doc.activeElement)) drawerTrigger?.focus();
     mobileDrawer?.classList.toggle("is-open", open);
     mobileDrawer?.setAttribute("aria-hidden", String(!open));
     mobileBackdrop?.classList.toggle("is-visible", open);
@@ -344,7 +345,7 @@
     capsuleLinks.addEventListener("pointerleave", () => moveIndicator(current));
     window.addEventListener("resize", () => moveIndicator(current));
   }
-  if (capsuleNavigation) {
+  doc.querySelectorAll("[data-capsule-nav],[data-bottom-capsule]").forEach((capsuleNavigation) => {
     const capsuleViewport = window.matchMedia("(min-width: 621px)");
     let previousY = Math.max(0, window.scrollY);
     let ticking = false;
@@ -385,7 +386,7 @@
     window.addEventListener("resize", resetCapsule, { passive: true });
     capsuleViewport.addEventListener?.("change", resetCapsule);
     window.addEventListener("pageshow", playCapsuleArrival);
-  }
+  });
 
   doc.querySelectorAll(".card").forEach((card, index) => {
     const delay = Math.min(index * 48, 480);

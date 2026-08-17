@@ -319,9 +319,27 @@ def _render_email_verification(
     recipient: str,
     challenge: EmailChallenge | None,
     form: EmailVerificationForm | None = None,
+    resend_form: EmptyForm | None = None,
+    resend_url: str | None = None,
+    back_url: str | None = None,
 ):
     resend_remaining, expires_remaining = _verification_timing(challenge)
     registration_mode = verification_mode == "registration"
+    change_mode = verification_mode == "change_email"
+    if resend_url is None:
+        if registration_mode:
+            resend_url = url_for("auth.registration_email_resend")
+        elif change_mode:
+            resend_url = url_for("auth.change_email_resend")
+        else:
+            resend_url = url_for("auth.request_email_verification")
+    if back_url is None:
+        if registration_mode:
+            back_url = url_for("auth.register")
+        elif change_mode:
+            back_url = url_for("portal.security")
+        else:
+            back_url = url_for("portal.profile")
     return render_template(
         "auth/email_verification.html",
         verification_mode=verification_mode,
@@ -331,13 +349,9 @@ def _render_email_verification(
         resend_remaining=resend_remaining,
         expires_remaining=expires_remaining,
         form=form or EmailVerificationForm(),
-        resend_form=EmptyForm(),
-        resend_url=url_for(
-            "auth.registration_email_resend"
-            if registration_mode
-            else "auth.request_email_verification"
-        ),
-        back_url=url_for("auth.register" if registration_mode else "portal.profile"),
+        resend_form=resend_form or EmptyForm(),
+        resend_url=resend_url,
+        back_url=back_url,
         auth_centered=True,
     )
 
@@ -993,12 +1007,8 @@ def profile():
     form = ProfileForm(obj=current_user)
     if form.validate_on_submit():
         username = form.username.data.strip().lower()
-        email = form.email.data.strip().lower()
         duplicate_username = db.session.scalar(
             db.select(User).where(User.username == username, User.id != current_user.id)
-        )
-        duplicate_email = db.session.scalar(
-            db.select(User).where(User.email == email, User.id != current_user.id)
         )
         avatar_file = form.avatar.data
         avatar_payload = b""
@@ -1012,16 +1022,10 @@ def profile():
                 form.avatar.errors.append("头像仅支持PNG、JPEG或WebP图片。")
         if duplicate_username:
             form.username.errors.append("这个baka网关 ID 已经被使用。")
-        if duplicate_email:
-            form.email.errors.append("这个邮箱已经被其他账号使用。")
         if not any(field.errors for field in form):
             previous_avatar = current_user.avatar_filename
             current_user.username = username
             current_user.display_name = form.display_name.data.strip()
-            email_changed = current_user.email != email
-            if email_changed:
-                current_user.email = email
-                current_user.email_verified = False
             if form.remove_avatar.data:
                 current_user.avatar_filename = None
             if avatar_payload and avatar_extension:
@@ -1033,7 +1037,7 @@ def profile():
                 )
             if previous_avatar != current_user.avatar_filename:
                 _delete_avatar(previous_avatar)
-            changed_fields = ["baka网关 ID", "昵称", "邮箱"]
+            changed_fields = ["baka网关 ID", "昵称"]
             if previous_avatar != current_user.avatar_filename:
                 changed_fields.append("头像")
             record_audit(
@@ -1042,17 +1046,8 @@ def profile():
                 str(current_user.id),
                 f"更新个人资料：{'、'.join(changed_fields)}",
             )
-            if email_changed:
-                record_audit(
-                    "account.email.update",
-                    "user",
-                    str(current_user.id),
-                    "更新当前邮箱并清除原有验证状态",
-                )
             db.session.commit()
             flash("个人资料已经保存。", "success")
-            if email_changed:
-                flash("新邮箱尚未验证，请发送邮箱验证码完成确认。", "info")
             return redirect(url_for("portal.profile"))
     for field in form:
         if field.errors:
@@ -1068,7 +1063,7 @@ def request_email_change():
         abort(400)
     if not effective_email_features()["profile_verification"]:
         flash("管理员暂未开放已有账号邮箱验证。", "error")
-        return redirect(url_for("portal.profile"))
+        return redirect(url_for("portal.security"))
     form = ChangeEmailRequestForm()
     if form.validate_on_submit():
         new_email = form.new_email.data.strip().lower()
@@ -1135,7 +1130,7 @@ def request_email_change():
         if field.errors:
             flash(field.errors[0], "error")
             break
-    return redirect(url_for("portal.profile"))
+    return redirect(url_for("portal.security"))
 
 
 @auth_bp.post("/verify-email/request/")
@@ -1145,13 +1140,13 @@ def request_email_verification():
         abort(400)
     if current_user.email_verified:
         flash("当前邮箱已经完成验证。", "info")
-        return redirect(url_for("portal.profile"))
+        return redirect(url_for("portal.security"))
     if not current_user.email:
         flash("请先填写需要验证的邮箱。", "error")
-        return redirect(url_for("portal.profile"))
+        return redirect(url_for("portal.security"))
     if not effective_email_features()["profile_verification"]:
         flash("管理员暂未开放已有账号邮箱验证。", "error")
-        return redirect(url_for("portal.profile"))
+        return redirect(url_for("portal.security"))
     try:
         _deliver_email_challenge(
             "verify_email",
@@ -1173,7 +1168,7 @@ def request_email_verification():
         )
         db.session.commit()
         flash(error.public_message, "error")
-        return redirect(url_for("portal.profile"))
+        return redirect(url_for("portal.security"))
     else:
         record_audit(
             "account.email.verification.send",
@@ -1191,13 +1186,13 @@ def request_email_verification():
 def verify_current_email():
     if current_user.email_verified:
         flash("当前邮箱已经完成验证。", "info")
-        return redirect(url_for("portal.profile"))
+        return redirect(url_for("portal.security"))
     if not current_user.email:
         flash("请先填写需要验证的邮箱。", "error")
-        return redirect(url_for("portal.profile"))
+        return redirect(url_for("portal.security"))
     if not effective_email_features()["profile_verification"]:
         flash("管理员暂未开放已有账号邮箱验证。", "error")
-        return redirect(url_for("portal.profile"))
+        return redirect(url_for("portal.security"))
     challenge = _latest_email_challenge(
         "verify_email",
         current_user.email,
@@ -1223,7 +1218,7 @@ def verify_current_email():
             )
             db.session.commit()
             flash("当前邮箱验证完成。", "success")
-            return redirect(url_for("portal.profile"))
+            return redirect(url_for("portal.security"))
         db.session.commit()
         messages = {
             "expired": "验证码已经过期，请重新发送。",
@@ -1327,17 +1322,9 @@ def totp_disable():
 def change_email_verification():
     pending = _pending_email_change()
     if pending is None:
-        # Check if user already changed email in profile route
-        if not current_user.email_verified and current_user.email:
-            challenge = _latest_email_challenge(
-                "change_email",
-                current_user.email,
-                user_id=current_user.id,
-            )
-        else:
-            flash("没有待处理的邮箱变更请求。", "info")
-        return redirect(url_for("portal.profile"))
-    
+        flash("没有待处理的邮箱变更请求。", "info")
+        return redirect(url_for("portal.security"))
+
     recipient = pending.get_new_email()
     challenge = _latest_email_challenge(
         "change_email",
@@ -1365,7 +1352,7 @@ def change_email_verification():
                 db.session.commit()
                 flash("邮箱地址已经被其他账号占用，变更已取消。", "error")
                 session.pop(PENDING_EMAIL_CHANGE_SESSION_KEY, None)
-                return redirect(url_for("portal.profile"))
+                return redirect(url_for("portal.security"))
             
             # Replace old email digest
             pending.old_email_digest = recipient_digest(current_user.email or "")
@@ -1382,7 +1369,7 @@ def change_email_verification():
             db.session.commit()
             flash("邮箱验证完成，当前邮箱已经更新。", "success")
             session.pop(PENDING_EMAIL_CHANGE_SESSION_KEY, None)
-            return redirect(url_for("portal.profile"))
+            return redirect(url_for("portal.security"))
         db.session.commit()
         messages = {
             "expired": "验证码已经过期，请重新发送。",
@@ -1411,7 +1398,7 @@ def change_email_resend():
     pending = _pending_email_change()
     if pending is None:
         flash("邮箱变更请求已经过期，请重新提交。", "info")
-        return redirect(url_for("portal.profile"))
+        return redirect(url_for("portal.security"))
     try:
         _deliver_email_challenge(
             "change_email",

@@ -1,15 +1,16 @@
 {% extends "layouts/auth.html" %}
 {% from "components.html" import icon %}
 {% set auth_centered = true %}
-{% block title %}{{ '验证注册邮箱' if verification_mode == 'registration' else '验证当前邮箱' }} · {{ app_name }}{% endblock %}
+{% set page_titles = {'registration': '验证注册邮箱', 'change_email': '验证新邮箱'} %}
+{% block title %}{{ page_titles.get(verification_mode, '验证当前邮箱') }} · {{ app_name }}{% endblock %}
 {% block auth_content %}
 <section class="public-email-verification" data-email-resend-seconds="{{ resend_remaining }}">
   <header class="oauth-app-heading gateway-auth-heading">
     <span class="oauth-app-icon oauth-app-icon--gateway">{{ icon('mail') }}</span>
     <div>
-      <span class="eyebrow">{{ 'REGISTRATION EMAIL' if verification_mode == 'registration' else 'ACCOUNT EMAIL' }}</span>
-      <h1>{{ '验证注册邮箱' if verification_mode == 'registration' else '验证当前邮箱' }}</h1>
-      <p>{{ '完成验证后才会建立baka网关账号，并继续你刚才发起的应用登录。' if verification_mode == 'registration' else '验证完成后，已授权平台会收到更新后的邮箱验证状态。' }}</p>
+      <span class="eyebrow">{{ {'registration': 'REGISTRATION EMAIL', 'change_email': 'NEW EMAIL'}[verification_mode] if verification_mode in ('registration', 'change_email') else 'ACCOUNT EMAIL' }}</span>
+      <h1>{{ page_titles.get(verification_mode, '验证当前邮箱') }}</h1>
+      <p>{{ {'registration': '完成验证后才会建立baka网关账号，并继续你刚才发起的应用登录。', 'change_email': '验证码已经发送到新邮箱，只有验证成功才会完成邮箱更换。'}[verification_mode] if verification_mode in ('registration', 'change_email') else '验证完成后，已授权平台会收到更新后的邮箱验证状态。' }}</p>
     </div>
   </header>
 
@@ -22,7 +23,7 @@
   <form method="post" class="email-code-entry public-email-code-entry" novalidate data-submit-state>
     {{ form.hidden_tag() }}
     <label class="field email-code-field"><span class="field__label">{{ form.code.label.text }}</span>{{ form.code(inputmode='numeric', autocomplete='one-time-code', maxlength='6', pattern='[0-9]{6}', placeholder='000000') }}</label>
-    <button class="button button--primary" type="submit" {{ 'disabled' if not challenge or expires_remaining <= 0 }}><span>{{ '验证并创建账号' if verification_mode == 'registration' else '完成邮箱验证' }}</span><i class="button-loader"></i></button>
+    <button class="button button--primary" type="submit" {{ 'disabled' if not challenge or expires_remaining <= 0 }}><span>{{ {'registration': '验证并创建账号', 'change_email': '完成邮箱更换'}[verification_mode] if verification_mode in ('registration', 'change_email') else '完成邮箱验证' }}</span><i class="button-loader"></i></button>
     <small>{{ ('验证码剩余约 ' ~ ((expires_remaining + 59) // 60) ~ ' 分钟') if challenge and expires_remaining > 0 else '当前验证码已不可用，请重新发送' }}</small>
   </form>
 
@@ -31,7 +32,7 @@
       {{ resend_form.hidden_tag() }}
       <button class="button button--soft" type="submit" data-email-resend-button {{ 'disabled' if resend_remaining else '' }}><span data-email-resend-label>{{ '重新发送（' ~ resend_remaining ~ ' 秒）' if resend_remaining else '重新发送验证码' }}</span><i class="button-loader"></i></button>
     </form>
-    <a class="text-link" href="{{ back_url }}">{{ '返回重新填写注册资料' if verification_mode == 'registration' else '返回个人资料' }}</a>
+    <a class="text-link" href="{{ back_url }}">{{ {'registration': '返回重新填写注册资料', 'change_email': '返回账号安全'}[verification_mode] if verification_mode in ('registration', 'change_email') else '返回个人资料' }}</a>
   </div>
   <p class="public-email-safety">{{ icon('shield') }}验证码只用于本次邮箱确认。baka网关不会在日志、页面或审计记录中保存验证码内容。</p>
 </section>

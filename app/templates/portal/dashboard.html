@@ -4,7 +4,7 @@
 {% block app_content %}
 <header class="portal-page-heading card motion-card">
   {{ user_avatar(current_user, 'portal-profile-mark') }}
-  <div><span class="eyebrow">MY HOME</span><h1>{{ current_user.display_name }}</h1><p>这里是一张只读的baka网关身份主页，资料修改请前往“修改个人资料”。</p></div>
+  <div><span class="eyebrow">MY HOME</span><h1>{{ current_user.display_name }}</h1></div>
   <span class="badge badge--{{ 'mint' if current_user.email_verified else 'yellow' }}">{{ '邮箱已验证' if current_user.email_verified else '邮箱待验证' }}</span>
 </header>
 
