@@ -7,7 +7,7 @@ from datetime import timedelta
 class BaseConfig:
     APP_NAME = "baka网关"
     APP_NAME_EN = "bakagateway"
-    APP_VERSION = "1.13.0"
+    APP_VERSION = "1.14.0"
     SECRET_KEY = os.getenv("CLOUD_GATEWAY_SECRET_KEY")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {

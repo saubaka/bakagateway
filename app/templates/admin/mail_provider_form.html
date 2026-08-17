@@ -9,7 +9,7 @@
     <label class="field"><span class="field__label">{{ form.name.label.text }}</span>{{ form.name(placeholder='例如：主要邮件服务') }}{{ field_errors(form.name) }}</label>
     <label class="field"><span class="field__label">{{ form.host.label.text }}</span>{{ form.host(placeholder='smtp.example.com', autocomplete='off') }}{{ field_errors(form.host) }}</label>
     <label class="field"><span class="field__label">{{ form.port.label.text }}</span>{{ form.port(inputmode='numeric') }}{{ field_errors(form.port) }}</label>
-    <label class="field"><span class="field__label">{{ form.security_mode.label.text }}</span>{{ form.security_mode() }}{{ field_errors(form.security_mode) }}</label>
+    <div class="field field--wide"><span class="field__label">{{ form.security_mode.label.text }}</span><div class="pill-choice-group">{% for option in form.security_mode %}<label class="pill-choice">{{ option() }}<span>{{ option.label.text }}</span></label>{% endfor %}</div>{{ field_errors(form.security_mode) }}</div>
     <label class="field"><span class="field__label">{{ form.username.label.text }}</span>{{ form.username(autocomplete='off', placeholder='可留空') }}{{ field_errors(form.username) }}</label>
     <label class="field password-field"><span class="field__label">{{ form.password.label.text }}</span>{{ form.password(autocomplete='new-password', placeholder=('留空将保留现有密码' if provider and provider.password_ciphertext else '无需认证时可以留空')) }}{{ password_toggle() }}{{ field_errors(form.password) }}</label>
     {% if provider and provider.password_ciphertext %}<label class="check-field field--wide">{{ form.clear_password() }}<i></i><span>{{ form.clear_password.label.text }}</span></label>{% endif %}

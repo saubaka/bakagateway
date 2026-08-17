@@ -8,7 +8,6 @@ from wtforms import (
     IntegerField,
     PasswordField,
     RadioField,
-    SelectField,
     StringField,
     SubmitField,
     TextAreaField,
@@ -244,7 +243,7 @@ class MailProviderForm(FlaskForm):
         validators=[DataRequired(), NumberRange(min=1, max=65535)],
         default=587,
     )
-    security_mode = SelectField(
+    security_mode = RadioField(
         "连接安全",
         choices=[
             ("starttls", "STARTTLS（推荐）"),
@@ -350,14 +349,14 @@ class EmailPolicyForm(FlaskForm):
     registration_enabled = BooleanField("注册必须完成邮箱验证")
     profile_verification_enabled = BooleanField("允许账号验证已有邮箱")
     password_reset_enabled = BooleanField("允许通过邮箱安全找回密码")
-    code_ttl_minutes = SelectField(
+    code_ttl_minutes = RadioField(
         "验证码有效时间",
         choices=[(5, "5 分钟"), (10, "10 分钟（推荐）"), (15, "15 分钟")],
         coerce=int,
         validators=[DataRequired()],
         default=10,
     )
-    resend_seconds = SelectField(
+    resend_seconds = RadioField(
         "再次发送等待",
         choices=[
             (60, "60 秒（推荐）"),
@@ -369,7 +368,7 @@ class EmailPolicyForm(FlaskForm):
         validators=[DataRequired()],
         default=60,
     )
-    max_attempts = SelectField(
+    max_attempts = RadioField(
         "单个验证码尝试次数",
         choices=[(3, "3 次"), (4, "4 次"), (5, "5 次（推荐）")],
         coerce=int,
@@ -380,12 +379,12 @@ class EmailPolicyForm(FlaskForm):
 
 
 class UserAdminForm(FlaskForm):
-    status = SelectField(
+    status = RadioField(
         "账号状态",
         choices=[("active", "正常"), ("suspended", "已停用"), ("locked", "已锁定")],
         validators=[DataRequired()],
     )
-    role = SelectField("角色", choices=[("member", "普通用户"), ("administrator", "管理员")])
+    role = RadioField("角色", choices=[("member", "普通用户"), ("administrator", "管理员")])
     new_password = PasswordField(
         "设置新密码",
         validators=[

@@ -242,7 +242,7 @@ body.drawer-open{overflow:hidden}
 .security-setup-card .qr-panel code{padding:5px 10px;border-radius:10px;background:#eef6fc;font-size:11px;letter-spacing:.04em;word-break:break-all}
 .security-setup-card h2{margin:4px 0 12px}
 @media(max-width:860px){.security-status-grid{grid-template-columns:1fr}.security-email-change-card{grid-template-columns:1fr;gap:18px}.security-setup-card{grid-template-columns:1fr}}
-@media(max-width:620px){.profile-verify-card,.security-manage-panel,.security-verify-card{flex-direction:column;align-items:stretch;gap:14px}}
+@media(max-width:620px){.profile-verify-card,.security-manage-panel,.security-verify-card{flex-direction:column;align-items:stretch;gap:14px}.profile-verify-card>.badge,.security-verify-card>.badge{align-self:center}}
 .avatar-editor__preview{border-radius:50%}.avatar-upload input{max-width:230px}
 .platform-card-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.platform-card{display:flex;min-width:0;min-height:305px;padding:24px;flex-direction:column}.platform-card--current{border-color:#bdddf0;background:linear-gradient(145deg,#fff,#edf8ff 60%,#fff2f7)}.platform-card header,.platform-card footer{display:flex;align-items:center;justify-content:space-between;gap:12px}.platform-card h2{margin:9px 0 5px;font-size:23px}.platform-card p{margin:0;color:var(--text-soft);font-size:11px;line-height:1.7}.platform-card>div>small{display:block;margin-top:10px;overflow:hidden;color:var(--text-faint);font-size:9px;text-overflow:ellipsis;white-space:nowrap}.platform-card footer{margin-top:auto;padding-top:18px;border-top:1px solid var(--border)}.platform-card footer>span{max-width:55%;overflow:hidden;color:var(--text-faint);font-size:8px;text-overflow:ellipsis;white-space:nowrap}
 .device-card-list{display:grid;gap:13px}.device-session-card{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:16px;align-items:center;padding:20px 22px}.device-session-card__title{display:flex;align-items:center;gap:9px}.device-session-card p{margin:4px 0;overflow-wrap:anywhere;color:var(--text-soft);font-size:11px}.device-session-card small{color:var(--text-faint);font-size:9px}
@@ -1201,3 +1201,44 @@ html[data-motion="reduce"] .mail-policy-unlocked.card.motion-card.is-card-visibl
 @media(max-width:900px){.mail-template-grid{grid-template-columns:1fr}.mail-template-card{min-height:0}}
 @media(max-width:620px){.mail-template-card,.mail-template-parameters{padding:20px}.mail-template-parameters .panel-heading h2{white-space:normal}.mail-template-editor,.mail-template-preview{min-height:300px;padding:16px}.mail-template-toolbar button{flex:1 1 calc(50% - 8px);justify-content:center}.mail-template-view-toggle{flex-basis:100%}}
 @media(prefers-reduced-motion:reduce){.mail-template-card,.mail-template-panel,.mail-template-parameters{animation:none}.mail-template-card.card--interactive,.mail-template-panel.card--interactive,.mail-template-parameters.card,.mail-template-editor,.mail-template-preview{transition-duration:250ms!important;transition-delay:0s!important}}
+
+/* Themed replacements for native controls · v1.14.0 */
+.security-email-change-card>.badge{justify-self:start;align-self:center}
+.check-field{position:relative;display:flex;align-items:center;gap:10px;min-width:0;min-height:44px;padding:0 4px;color:var(--text-soft);font-size:13px;font-weight:800;line-height:1.4;cursor:pointer;user-select:none}
+.check-field>input{position:absolute;width:1px;height:1px;opacity:0}
+.check-field>i{flex:0 0 auto;display:grid;place-items:center;width:22px;height:22px;border:1.5px solid #c3d6e4;border-radius:8px;background:linear-gradient(145deg,#fff,#f6fafd);box-shadow:inset 0 1px 2px rgba(71,92,120,.05);transition:border-color 180ms var(--ease),background 200ms var(--ease),transform 220ms var(--spring),box-shadow 200ms var(--ease)}
+.check-field:hover>i{border-color:#a9cde4;transform:translateY(-1px)}
+.check-field>input:checked+i{border-color:#8fc4e6;background:linear-gradient(145deg,#e2f3fd,#c9e7f8);box-shadow:inset 0 1px 0 #fff,0 4px 10px rgba(91,130,169,.16)}
+.check-field>input:checked+i::after{content:"";width:9px;height:5px;margin-top:-2px;border-left:2px solid #527b96;border-bottom:2px solid #527b96;transform:rotate(-45deg)}
+.check-field>input:focus-visible+i{outline:3px solid rgba(136,181,213,.3);outline-offset:2px}
+.check-field>input:disabled+i{opacity:.55}
+.check-field>span{min-width:0}
+.pill-choice-group{display:flex;flex-wrap:wrap;gap:8px}
+.pill-choice{position:relative;display:inline-flex;align-items:center;min-height:44px;padding:9px 16px;border:1px solid var(--border);border-radius:var(--radius-pill);background:linear-gradient(145deg,#fff,#fafcff);color:var(--text-soft);font-size:12.5px;font-weight:850;line-height:1.25;cursor:pointer;user-select:none;transition:color 180ms var(--ease),border-color 180ms var(--ease),background 200ms var(--ease),transform 220ms var(--spring),box-shadow 220ms var(--ease)}
+.pill-choice:hover{color:var(--text);border-color:#bcd5e5;transform:translateY(-2px);box-shadow:0 8px 18px rgba(89,126,151,.09)}
+.pill-choice>input{position:absolute;width:1px;height:1px;opacity:0}
+.pill-choice:has(input:checked){color:var(--blue-600);border-color:var(--blue-300);background:linear-gradient(145deg,#f5fbff,var(--blue-100));box-shadow:inset 0 1px 0 #fff,0 6px 16px rgba(91,130,169,.12)}
+.pill-choice:has(input:focus-visible){outline:3px solid rgba(136,181,213,.3);outline-offset:2px}
+.pill-choice:has(input:disabled){opacity:.55;cursor:not-allowed;transform:none}
+.image-crop-control--range input[type=range]{flex:1;min-width:0;height:7px;border-radius:99px;appearance:none;background:linear-gradient(90deg,var(--blue-200),var(--pink-100));cursor:ew-resize}
+.image-crop-control--range input[type=range]::-webkit-slider-thumb{width:19px;height:19px;border:3px solid #fff;border-radius:50%;appearance:none;background:#8fc4e6;box-shadow:0 3px 9px rgba(69,111,147,.22)}
+.image-crop-control--range input[type=range]::-moz-range-thumb{width:15px;height:15px;border:3px solid #fff;border-radius:50%;background:#8fc4e6;box-shadow:0 3px 9px rgba(69,111,147,.22)}
+.transition-duration-control>input[type=range]::-moz-range-thumb{width:16px;height:16px;border:4px solid #fff;border-radius:50%;background:#8fc4e6;box-shadow:0 3px 10px rgba(69,111,147,.24)}
+.dialog-metric-control input[type=range]::-moz-range-thumb{width:14px;height:14px;border:3px solid #fff;border-radius:50%;background:var(--dialog-accent,#7eaed0);box-shadow:0 3px 9px rgba(69,111,147,.2)}
+.theme-control-card input[type=range]{height:7px;border-radius:99px;appearance:none;background:linear-gradient(90deg,var(--blue-200),var(--pink-100));cursor:ew-resize}
+.theme-control-card input[type=range]::-webkit-slider-thumb{width:18px;height:18px;border:3px solid #fff;border-radius:50%;appearance:none;background:#91c4e3;box-shadow:0 3px 9px rgba(69,111,147,.22)}
+.theme-control-card input[type=range]::-moz-range-thumb{width:14px;height:14px;border:3px solid #fff;border-radius:50%;background:#91c4e3;box-shadow:0 3px 9px rgba(69,111,147,.22)}
+.avatar-upload input{width:100%;max-width:280px;min-height:46px;padding:6px;border:1px dashed #bcd5e5;border-radius:15px;background:#f7fbfe;font-size:0;cursor:pointer;transition:border-color 180ms var(--ease),background 180ms var(--ease),transform 220ms var(--spring)}
+.avatar-upload input:hover{border-color:#9ecbe6;background:#eff8fd;transform:translateY(-1px)}
+.avatar-upload input::file-selector-button{padding:8px 14px;border:1px solid var(--blue-200);border-radius:12px;background:linear-gradient(145deg,#f5fbff,var(--blue-100));color:var(--blue-600);font:inherit;font-size:12px;font-weight:850;cursor:pointer;transition:transform 200ms var(--spring),box-shadow 200ms var(--ease)}
+.avatar-upload input::file-selector-button:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(91,130,169,.14)}
+.color-input-pair>input[type=color]{padding:4px;cursor:pointer}
+.color-input-pair>input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+.color-input-pair>input[type=color]::-webkit-color-swatch{border:none;border-radius:10px}
+.color-input-pair>input[type=color]::-moz-color-swatch{border:none;border-radius:10px}
+*{scrollbar-width:thin;scrollbar-color:#c9dbe8 transparent}
+*::-webkit-scrollbar{width:10px;height:10px}
+*::-webkit-scrollbar-track{background:transparent}
+*::-webkit-scrollbar-thumb{border:3px solid transparent;border-radius:999px;background:#c9dbe8;background-clip:content-box}
+*::-webkit-scrollbar-thumb:hover{background:#b0cbdf;background-clip:content-box}
+@media(prefers-reduced-motion:reduce){.check-field>i,.pill-choice,.avatar-upload input,.avatar-upload input::file-selector-button{transition-duration:.01ms!important}}

@@ -186,10 +186,12 @@
   const dialogTitle = dialog?.querySelector("[data-confirm-title]");
   const dialogCopy = dialog?.querySelector("[data-confirm-copy]");
   const dialogField = dialog?.querySelector("[data-system-dialog-field]");
+  const dialogInputLabel = dialog?.querySelector("[data-app-dialog-input-label]");
   const dialogInput = dialog?.querySelector("[data-system-dialog-input]");
   const dialogAccept = dialog?.querySelector("[data-confirm-accept]");
   const dialogFooterCancel = dialog?.querySelector("[data-dialog-footer-cancel]");
   let pendingForm = null;
+  let pendingPrompt = null;
   const prepareSystemDialog = (mode, title, copy) => {
     if (!dialog) return;
     dialog.dataset.dialogMode = mode;
@@ -200,8 +202,19 @@
     if (dialogAccept) dialogAccept.textContent = mode === "alert" ? "知道了" : "确认";
     if (dialogInput) dialogInput.value = "";
   };
+  const openSystemPrompt = (title, copy, inputLabel, initial, callback) => {
+    if (!dialog) { callback(window.prompt(title, initial)); return; }
+    pendingForm = null;
+    pendingPrompt = callback;
+    prepareSystemDialog("prompt", title, copy);
+    if (dialogInputLabel) dialogInputLabel.textContent = inputLabel;
+    if (dialogInput) dialogInput.value = initial || "";
+    dialog.showModal();
+    requestAnimationFrame(() => dialogInput?.focus());
+  };
   dialog?.addEventListener("cancel", () => {
     pendingForm = null;
+    pendingPrompt = null;
   });
   doc.querySelectorAll("form[data-confirm]").forEach((form) => form.addEventListener("submit", (event) => {
     if (form.dataset.confirmed === "true") return;
@@ -212,13 +225,26 @@
   }));
   dialog?.querySelectorAll("[data-confirm-cancel]").forEach((button) => button.addEventListener("click", () => {
     pendingForm = null;
+    pendingPrompt = null;
     dialog.close();
   }));
   dialog?.querySelector("[data-confirm-accept]")?.addEventListener("click", () => {
-    if (!pendingForm) return dialog.close();
-    pendingForm.dataset.confirmed = "true";
-    dialog.close();
-    pendingForm.requestSubmit();
+    if (pendingForm) {
+      pendingForm.dataset.confirmed = "true";
+      const form = pendingForm;
+      pendingForm = null;
+      dialog.close();
+      form.requestSubmit();
+      return;
+    }
+    if (pendingPrompt) {
+      const callback = pendingPrompt;
+      pendingPrompt = null;
+      dialog.close();
+      callback((dialogInput?.value || "").trim());
+      return;
+    }
+    return dialog.close();
   });
 
   const sidebar = doc.querySelector("[data-admin-sidebar]");
@@ -693,7 +719,15 @@
         [...node.attributes].forEach((attribute) => {
           const name = attribute.name.toLowerCase();
           if (tag === "a" && name === "href" && /^(?:https?:|mailto:)/i.test(attribute.value)) element.setAttribute("href", attribute.value);
-          if (name === "style" && !/(?:url\s*\(|expression|javascript|<|>)/i.test(attribute.value)) element.setAttribute("style", attribute.value);
+          if (name === "style" && !/(?:url\s*\(|expression|javascript|<|>)/i.test(attribute.value)) {
+            attribute.value.split(";").forEach((declaration) => {
+              const separator = declaration.indexOf(":");
+              if (separator < 1) return;
+              const property = declaration.slice(0, separator).trim().toLowerCase();
+              const value = declaration.slice(separator + 1).trim();
+              if (property && value) element.style.setProperty(property, value);
+            });
+          }
         });
         node.childNodes.forEach((child) => element.append(cleanNode(child)));
         return element;
@@ -729,13 +763,20 @@
     toggle.addEventListener("click", () => setPreview(!form.classList.contains("is-preview")));
     commandButtons.forEach((button) => button.addEventListener("click", () => {
       const command = button.dataset.mailCommand;
-      editor.focus();
       if (command === "createLink") {
-        const url = window.prompt("请输入链接地址（https:// 或 mailto:）", "https://");
-        if (url) doc.execCommand("createLink", false, url);
-      } else if (command) {
-        doc.execCommand(command, false, null);
+        const selection = doc.getSelection();
+        const savedRange = selection && selection.rangeCount ? selection.getRangeAt(0).cloneRange() : null;
+        openSystemPrompt("插入链接", "请输入链接地址（https:// 或 mailto:）", "链接地址", "https://", (url) => {
+          if (!url) return;
+          editor.focus();
+          if (savedRange) { selection.removeAllRanges(); selection.addRange(savedRange); }
+          doc.execCommand("createLink", false, url);
+          syncInput();
+        });
+        return;
       }
+      editor.focus();
+      if (command) doc.execCommand(command, false, null);
       syncInput();
     }));
     doc.querySelectorAll("[data-insert-variable]").forEach((button) => button.addEventListener("click", () => {

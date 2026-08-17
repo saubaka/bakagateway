@@ -10,8 +10,8 @@
 <section class="card admin-panel form-panel">
   <form method="post" class="form-grid" novalidate>
     {{ form.hidden_tag() }}
-    <label class="field"><span class="field__label">{{ form.status.label.text }}</span>{{ form.status() }}{{ field_errors(form.status) }}</label>
-    <label class="field"><span class="field__label">{{ form.role.label.text }}</span>{{ form.role() }}{{ field_errors(form.role) }}</label>
+    <div class="field"><span class="field__label">{{ form.status.label.text }}</span><div class="pill-choice-group">{% for option in form.status %}<label class="pill-choice">{{ option() }}<span>{{ option.label.text }}</span></label>{% endfor %}</div>{{ field_errors(form.status) }}</div>
+    <div class="field"><span class="field__label">{{ form.role.label.text }}</span><div class="pill-choice-group">{% for option in form.role %}<label class="pill-choice">{{ option() }}<span>{{ option.label.text }}</span></label>{% endfor %}</div>{{ field_errors(form.role) }}</div>
     <div class="field field--wide client-form-heading"><span class="eyebrow">EMAIL OWNERSHIP</span><h2>邮箱验证状态</h2><p>{{ '此账号已经通过真实邮箱验证码。' if user.email_verified else '此账号尚未通过真实邮箱验证码；管理员不能手工修改验证状态。' }}</p></div>
     <div class="field field--wide client-form-heading"><span class="eyebrow">PASSWORD RECOVERY</span><h2>管理员协助重设密码</h2><p>填写后会立即撤销该账号的所有登录会话、访问令牌和未使用授权码；留空则不修改密码。</p></div>
     <label class="field"><span class="field__label">{{ form.new_password.label.text }}</span>{{ form.new_password(autocomplete='new-password') }}{{ field_errors(form.new_password) }}</label>

@@ -52,7 +52,15 @@
   {{ field_errors(form.registration_enabled) }}
   <div class="client-form-heading mail-policy-security-heading"><span class="eyebrow">SECURITY BOUNDS</span><h2>验证码安全边界</h2><p>范围被限制在保守选项内，收件地址和请求指纹的小时、每日额度继续由服务端固定保护。</p></div>
   <div class="mail-policy-security-grid">
-    {% for field in (form.code_ttl_minutes, form.resend_seconds, form.max_attempts) %}<label class="field"><span class="field__label">{{ field.label.text }}</span>{{ field() }}{{ field_errors(field) }}</label>{% endfor %}
+    {% for field in (form.code_ttl_minutes, form.resend_seconds, form.max_attempts) %}
+    <div class="field">
+      <span class="field__label">{{ field.label.text }}</span>
+      <div class="pill-choice-group">
+        {% for option in field %}<label class="pill-choice">{{ option() }}<span>{{ option.label.text }}</span></label>{% endfor %}
+      </div>
+      {{ field_errors(field) }}
+    </div>
+    {% endfor %}
   </div>
   <footer class="sticky-form-actions"><button class="button button--primary" type="submit">保存验证策略</button></footer>
 </form>
