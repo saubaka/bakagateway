@@ -1,0 +1,23 @@
+{% extends "layouts/app.html" %}
+{% from "components.html" import field_errors, icon, user_avatar %}
+{% block title %}修改个人资料 · {{ app_name }}{% endblock %}
+{% block app_content %}
+<header class="portal-title-block"><span class="eyebrow">EDIT PROFILE</span><h1>修改个人资料</h1><p>头像、baka网关 ID、昵称和邮箱会同步给你授权的平台。</p></header>
+<section class="card panel profile-editor-card motion-card">
+  <div class="panel-heading"><div><span class="soft-icon">{{ icon('person') }}</span><div><span class="eyebrow">PROFILE</span><h2>资料编辑器</h2></div></div><span class="badge badge--{{ 'mint' if current_user.email_verified else 'yellow' }}">{{ '邮箱已验证' if current_user.email_verified else '邮箱待验证' }}</span></div>
+  <form method="post" action="{{ url_for('auth.profile') }}" enctype="multipart/form-data" class="form-grid profile-center-form" novalidate data-submit-state>
+    {{ profile_form.hidden_tag() }}
+    <div class="avatar-editor field--wide">
+      <div class="avatar-editor__preview">{{ user_avatar(current_user, 'avatar-profile-safe') }}</div>
+      <label class="avatar-upload"><span><strong>更换头像</strong><small>选择图片后进入圆形裁剪、拖动和缩放面板</small></span>{{ profile_form.avatar(accept='image/png,image/jpeg,image/webp', data_image_crop='', data_avatar_crop='') }}</label>
+      {% if current_user.avatar_filename %}<label class="check-field avatar-remove">{{ profile_form.remove_avatar() }}<i></i><span>移除当前头像</span></label>{% endif %}
+      {{ field_errors(profile_form.avatar) }}
+    </div>
+    <label class="field"><span class="field__label">{{ profile_form.username.label.text }}</span>{{ profile_form.username(autocomplete='username') }}<small>不会改变平台使用的稳定身份编号。</small>{{ field_errors(profile_form.username) }}</label>
+    <label class="field"><span class="field__label">{{ profile_form.display_name.label.text }}</span>{{ profile_form.display_name(autocomplete='name') }}{{ field_errors(profile_form.display_name) }}</label>
+    <label class="field field--wide"><span class="field__label">{{ profile_form.email.label.text }}</span>{{ profile_form.email(autocomplete='email') }}<small>修改邮箱后需要重新完成验证。</small>{{ field_errors(profile_form.email) }}</label>
+    <div class="button-row button-row--end field--wide"><button class="button button--primary" type="submit"><span>保存个人资料</span><i class="button-loader"></i></button></div>
+  </form>
+</section>
+{% if not current_user.email_verified %}<section class="card profile-verify-card motion-card"><div><strong>当前邮箱尚未验证</strong><p>{{ '验证码会发送到当前邮箱，完成后接入平台会同步新的验证状态。' if email_verification_enabled else '管理员暂未开放已有账号邮箱验证。' }}</p></div>{% if email_verification_enabled %}<form method="post" action="{{ url_for('auth.request_email_verification') }}" data-submit-state>{{ empty_form.hidden_tag() }}<button class="button button--soft" type="submit"><span>发送邮箱验证码</span><i class="button-loader"></i></button></form>{% else %}<span class="badge badge--yellow">暂未开放</span>{% endif %}</section>{% endif %}
+{% endblock %}

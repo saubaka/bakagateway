@@ -1,0 +1,36 @@
+{% extends "layouts/auth.html" %}
+{% from "components.html" import icon, password_toggle %}
+{% set auth_centered = true %}
+{% block title %}创建账号 · {{ app_name }}{% endblock %}
+{% block auth_content %}
+<header class="oauth-app-heading gateway-auth-heading">
+  <span class="oauth-app-icon oauth-app-icon--gateway">{{ icon('cloud') }}</span>
+  <div>
+    <span class="eyebrow">CREATE BAKAGATEWAY ACCOUNT</span>
+    <h1>注册{{ app_name }}</h1>
+    <p>创建一枚本地优先的云朵通行证，再由你决定每个应用可以读取哪些资料。</p>
+  </div>
+</header>
+<form method="post" class="form-grid auth-form auth-form--two" novalidate data-submit-state data-policy-gated>
+  {{ form.hidden_tag() }}
+  <label class="field"><span class="field__label">{{ form.username.label.text }}</span>{{ form.username(autocomplete='username') }}</label>
+  <label class="field"><span class="field__label">{{ form.display_name.label.text }}</span>{{ form.display_name(autocomplete='name') }}</label>
+  <label class="field field--wide"><span class="field__label">{{ form.email.label.text }}</span>{{ form.email(autocomplete='email', inputmode='email') }}<small>验证码会发送到这个邮箱，验证完成后才会建立账号。</small></label>
+  <label class="field password-field"><span class="field__label">{{ form.password.label.text }}</span>{{ form.password(autocomplete='new-password') }}{{ password_toggle() }}</label>
+  <label class="field password-field"><span class="field__label">{{ form.password_confirm.label.text }}</span>{{ form.password_confirm(autocomplete='new-password') }}{{ password_toggle() }}</label>
+  <label class="check-field policy-check field--wide">
+    {{ form.policy_consent(data_policy_consent=true) }}<i></i>
+    <span>我已同意<a href="{{ url_for('auth.privacy_policy') }}" target="_blank" rel="noopener noreferrer">隐私条款</a>和<a href="{{ url_for('auth.service_terms') }}" target="_blank" rel="noopener noreferrer">服务政策</a></span>
+  </label>
+  <button class="button button--primary button--wide field--wide" type="submit" data-policy-submit disabled><span>创建账号</span><i class="button-loader"></i></button>
+</form>
+<div class="auth-switch"><span>已经拥有账号？</span><a href="{{ url_for('auth.login', next=request.args.get('next') or session.get('login_next')) }}">返回登录</a></div>
+{% endblock %}
+{% block extra_toasts %}
+{% for field in form if field.name != 'csrf_token' %}{% for error in field.errors %}
+<div class="toast toast--error" data-toast>
+  <i aria-hidden="true"></i><span>{{ error }}</span>
+  <button type="button" class="icon-button icon-button--small" data-dismiss-toast aria-label="关闭">×</button>
+</div>
+{% endfor %}{% endfor %}
+{% endblock %}

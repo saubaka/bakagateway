@@ -1,0 +1,49 @@
+{% extends "layouts/app.html" %}
+{% from "components.html" import app_mark, icon %}
+{% block title %}我的平台 · {{ app_name }}{% endblock %}
+{% block app_content %}
+<header class="portal-title-block"><span class="eyebrow">MY PLATFORMS</span><h1>我的平台</h1><p>查看接入应用，并随时调整它们可以读取的资料。</p></header>
+<div class="platform-card-grid">
+  <article class="platform-card platform-card--current card motion-card">
+    <header><span class="soft-icon">{{ icon('cloud') }}</span><span class="badge badge--blue">当前平台</span></header>
+    <div><span class="eyebrow">IDENTITY GATEWAY</span><h2>{{ app_name }}</h2><p>管理统一身份、个人资料、登录设备与安全验证。</p></div>
+    <footer><span>身份资料由你掌控</span><a class="button button--soft button--small" href="{{ url_for('portal.dashboard') }}">打开主页</a></footer>
+  </article>
+  {% for platform in platforms %}
+  {% set client = platform.client %}
+  <article class="platform-card platform-card--permissions card motion-card">
+    <header>
+      {{ app_mark(client, 'platform-app-icon') }}
+      <span class="badge badge--blue">已接入</span>
+    </header>
+    <div class="platform-card__copy">
+      <span class="eyebrow">CONNECTED APPLICATION</span>
+      <h2>{{ client.name }}</h2>
+      <p>{{ client.description or '通过baka网关安全连接的应用。' }}</p>
+      <small>{{ client.homepage_url }}</small>
+    </div>
+    <form method="post" action="{{ url_for('portal.platform_permissions', client_id=client.client_id) }}" class="platform-permission-form">
+      {{ permission_form.hidden_tag() }}
+      <fieldset>
+        <legend>允许读取的资料</legend>
+        <div class="platform-permission-grid">
+          {% for permission in platform.permissions %}
+          <label class="permission-card permission-card--compact">
+            <input type="checkbox" name="permissions" value="{{ permission.scope }}" {% if permission.granted %}checked{% endif %}>
+            <span class="permission-card__check">{{ icon('check') }}</span>
+            <strong>{{ permission.label }}</strong>
+          </label>
+          {% endfor %}
+        </div>
+      </fieldset>
+      <div class="platform-card__actions">
+        <span>{% if client.service_terms_url %}<a href="{{ client.service_terms_url }}" target="_blank" rel="noopener noreferrer">服务政策</a>{% endif %}{% if client.privacy_policy_url %}<a href="{{ client.privacy_policy_url }}" target="_blank" rel="noopener noreferrer">隐私条款</a>{% endif %}</span>
+        <button class="button button--primary button--small" type="submit">保存权限</button>
+      </div>
+    </form>
+    <footer><span>更改会立即限制现有令牌</span><a class="button button--soft button--small" href="{{ client.homepage_url }}" target="_blank" rel="noopener">进入平台</a></footer>
+  </article>
+  {% endfor %}
+</div>
+{% if not platforms %}<section class="empty-state card motion-card"><span class="soft-icon">{{ icon('project') }}</span><h3>暂时没有其他已连接平台</h3><p>从博客等平台通过baka网关完成一次登录与授权后，它会自动出现在这里。</p></section>{% endif %}
+{% endblock %}

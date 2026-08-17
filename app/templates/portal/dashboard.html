@@ -1,0 +1,26 @@
+{% extends "layouts/app.html" %}
+{% from "components.html" import icon, user_avatar %}
+{% block title %}我的主页 · {{ app_name }}{% endblock %}
+{% block app_content %}
+<header class="portal-page-heading card motion-card">
+  {{ user_avatar(current_user, 'portal-profile-mark') }}
+  <div><span class="eyebrow">MY HOME</span><h1>{{ current_user.display_name }}</h1><p>这里是一张只读的baka网关身份主页，资料修改请前往“修改个人资料”。</p></div>
+  <span class="badge badge--{{ 'mint' if current_user.email_verified else 'yellow' }}">{{ '邮箱已验证' if current_user.email_verified else '邮箱待验证' }}</span>
+</header>
+
+<section class="profile-info-grid">
+  <article class="profile-info-card card motion-card"><span class="soft-icon">{{ icon('person') }}</span><small>baka网关 ID</small><strong>@{{ current_user.username }}</strong><p>可公开展示的账号名称</p></article>
+  <article class="profile-info-card card motion-card"><span class="soft-icon soft-icon--pink">{{ icon('link') }}</span><small>稳定身份编号</small><strong>#{{ current_user.id }}</strong><p>接入平台识别你的固定编号</p></article>
+  <article class="profile-info-card card motion-card"><span class="soft-icon">{{ icon('check') }}</span><small>账号身份</small><strong>{{ '管理员' if current_user.has_permission('admin.access') else '普通用户' }}</strong><p>{{ '可进入baka网关管理后台' if current_user.has_permission('admin.access') else '拥有个人中心访问权限' }}</p></article>
+  <article class="profile-info-card card motion-card"><span class="soft-icon soft-icon--pink">{{ icon('chart') }}</span><small>加入baka网关</small><strong>{{ current_user.created_at.strftime('%Y-%m-%d') }}</strong><p>账号首次创建日期</p></article>
+</section>
+
+<section class="portal-section-heading"><div><span class="eyebrow">QUICK OVERVIEW</span><h2>当前状态</h2></div></section>
+<div class="portal-summary-grid">
+  <a class="summary-link-card card motion-card" href="{{ url_for('portal.platforms') }}"><strong>{{ clients|length + 1 }}</strong><span>我的平台</span><small>包含当前baka网关平台</small>{{ icon('arrow') }}</a>
+  <a class="summary-link-card card motion-card" href="{{ url_for('portal.devices') }}"><strong>{{ sessions|length }}</strong><span>登录设备</span><small>当前有效服务器会话</small>{{ icon('arrow') }}</a>
+  <a class="summary-link-card card motion-card" href="{{ url_for('portal.security') }}"><strong>{{ '已启用' if current_user.totp_enabled else '待设置' }}</strong><span>双重验证</span><small>动态验证码保护</small>{{ icon('arrow') }}</a>
+</div>
+
+<section class="card portal-activity-preview motion-card"><div class="panel-heading"><div><span class="eyebrow">RECENT ACTIVITY</span><h2>最近操作</h2></div><a class="text-link" href="{{ url_for('portal.activity') }}">查看全部</a></div><div class="timeline-list">{% for item in recent %}<article><i></i><div><strong>{{ item.title }}</strong><p>{{ item.summary }}</p></div><time>{{ item.created_at.strftime('%m-%d %H:%M') }}</time></article>{% else %}<div class="empty-compact">还没有操作记录。</div>{% endfor %}</div></section>
+{% endblock %}

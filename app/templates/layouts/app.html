@@ -1,0 +1,57 @@
+{% extends "layouts/base.html" %}
+{% from "components.html" import icon, user_avatar %}
+{% set portal_items = [
+  ('portal.dashboard','home','我的主页','查看个人身份名片'),
+  ('portal.profile','person','修改个人资料','头像、ID、昵称与邮箱'),
+  ('portal.platforms','project','我的平台','查看已经接入的平台'),
+  ('portal.devices','code','登录设备','管理服务器端会话'),
+  ('portal.activity','chart','操作日志','登录与安全操作记录'),
+  ('portal.security','check','账号安全','双重验证与安全状态')
+] %}
+{% block body %}
+<div class="app-shell">
+  <header class="site-header site-header--account is-nav-arriving" data-capsule-nav>
+    <nav class="site-nav" aria-label="个人中心主导航">
+      <a class="site-brand" href="{{ url_for('portal.dashboard') }}"><span class="brand-mark">{{ icon('cloud') }}</span><span>{{ app_name }}</span></a>
+      <div class="site-nav__links site-nav__links--account">
+        {% for endpoint,icon_name,label,description in portal_items %}
+        <a class="{{ 'is-current' if request.endpoint == endpoint }}" href="{{ url_for(endpoint) }}">{{ label }}</a>
+        {% endfor %}
+      </div>
+      <div class="site-nav__actions">
+        <div class="identity-menu" data-identity-menu>
+          <button class="identity-menu__trigger" type="button" aria-label="打开账号菜单" aria-haspopup="menu" aria-expanded="false" data-identity-menu-trigger>
+            {{ user_avatar(current_user, 'identity-menu__avatar') }}
+          </button>
+          <div class="identity-menu__panel" role="menu" data-identity-menu-panel>
+            {% if current_user.has_permission('admin.access') %}<a role="menuitem" href="{{ url_for('admin.dashboard') }}">{{ icon('settings') }}<span>管理后台</span></a>{% endif %}
+            <form method="post" action="{{ url_for('auth.logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit" role="menuitem">{{ icon('arrow') }}<span>退出登录</span></button></form>
+          </div>
+        </div>
+        <button class="icon-button mobile-menu-button" type="button" data-mobile-drawer aria-controls="mobile-drawer" aria-expanded="false" aria-label="打开更多菜单">{{ icon('menu') }}</button>
+      </div>
+    </nav>
+  </header>
+
+  <div class="drawer-backdrop" data-mobile-backdrop hidden></div>
+  <aside class="mobile-drawer" id="mobile-drawer" aria-label="个人中心菜单" aria-hidden="true">
+    <div class="drawer__handle" aria-hidden="true"></div>
+    <div class="drawer__header"><div><span class="eyebrow">MY BAKAGATEWAY</span><h2>个人中心</h2></div><button class="icon-button" type="button" data-close-mobile-drawer aria-label="关闭菜单">{{ icon('close') }}</button></div>
+    <nav class="drawer__links">
+      {% for endpoint,icon_name,label,description in portal_items %}
+      <a class="{{ 'is-current' if request.endpoint == endpoint }}" href="{{ url_for(endpoint) }}">{{ icon(icon_name) }}<span><strong>{{ label }}</strong><small>{{ description }}</small></span></a>
+      {% endfor %}
+      {% if current_user.has_permission('admin.access') %}<a href="{{ url_for('admin.dashboard') }}">{{ icon('settings') }}<span><strong>管理员后台</strong><small>管理账号、平台与全站主题</small></span></a>{% endif %}
+    </nav>
+  </aside>
+
+  <main class="page-shell portal-page" id="main-content">{% block app_content %}{% endblock %}</main>
+  <footer class="site-footer site-footer--configured">
+    <div class="site-footer__identity"><strong>{{ app_name }}</strong><p>{{ footer_content.description }}</p></div>
+    <div class="site-footer__columns">
+      {% for column in footer_content.columns %}<section class="site-footer__column"><strong>{{ column.title }}</strong>{% for item in column.links %}<a href="{{ item.url }}">{{ item.label }}</a>{% endfor %}</section>{% endfor %}
+    </div>
+    <div class="site-footer__meta"><small>© {{ current_year }} {{ app_name_en }} · {{ footer_content.copyright }}</small><button type="button" data-motion-toggle aria-pressed="false">动效：跟随系统</button><small>v{{ app_version }}</small></div>
+  </footer>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "layouts/auth.html" %}
+{% from "components.html" import app_mark, icon %}
+{% set auth_centered = true %}
+{% block title %}确认登录 {{ client.name }} · {{ app_name }}{% endblock %}
+{% block auth_content %}
+<section class="oauth-final-confirmation">
+  {{ app_mark(client, 'oauth-app-icon oauth-app-icon--confirm') }}
+  <span class="eyebrow">FINAL CONFIRMATION</span>
+  <h1>确认登录{{ client.name }}</h1>
+  <p>baka网关已验证你的账号。只有点击确认后，应用才会收到本次授权结果。</p>
+  <div class="oauth-confirm-account">
+    <span>{{ (current_user.display_name or current_user.username)[:1] }}</span>
+    <div><strong>{{ current_user.display_name }}</strong><b>@{{ current_user.username }}</b></div>
+  </div>
+  <div class="oauth-confirm-scopes">
+    <span>{{ icon('check') }}基础身份</span>
+    {% for label in selected_permissions %}<span>{{ icon('check') }}{{ label }}</span>{% endfor %}
+  </div>
+  <form method="post" class="oauth-confirm-form">
+    {{ form.hidden_tag() }}
+    <div class="oauth-confirm-actions">
+      <button class="button button--soft" type="submit" name="decision" value="change">返回修改</button>
+      <button class="button button--soft" type="submit" name="decision" value="deny">拒绝登录</button>
+      <button class="button button--primary" type="submit" name="decision" value="allow">确认登录应用</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

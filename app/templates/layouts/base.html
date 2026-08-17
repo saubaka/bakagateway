@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN" data-motion="system" data-page-transition="{{ theme_settings.page_transition_style }}" data-transition-duration="{{ theme_settings.page_transition_duration }}" data-font-style="{{ theme_settings.global_font_style }}" data-dialog-style="{{ theme_settings.dialog_style }}" data-dialog-shadow="{{ theme_settings.dialog_shadow }}" data-admin-menu-subtitles="{{ 'visible' if theme_settings.admin_menu_subtitles_visible else 'hidden' }}" data-route-color-start="{{ theme_settings.page_transition_color_start }}" data-route-color-middle="{{ theme_settings.page_transition_color_middle }}" data-route-color-end="{{ theme_settings.page_transition_color_end }}" data-dialog-color-start="{{ theme_settings.dialog_color_start }}" data-dialog-color-end="{{ theme_settings.dialog_color_end }}" data-dialog-accent="{{ theme_settings.dialog_accent }}" data-dialog-radius="{{ theme_settings.dialog_radius }}" data-dialog-width="{{ theme_settings.dialog_width }}" data-dialog-backdrop-blur="{{ theme_settings.dialog_backdrop_blur }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#f7f9fc">
+  <meta name="description" content="{% block description %}baka网关是本地优先、安全而可爱的统一登录网关。{% endblock %}">
+  <title>{% block title %}{{ app_name }} · {{ app_name_en }}{% endblock %}</title>
+  <script src="{{ url_for('static', filename='scripts/transition-bootstrap.js', v=app_version) }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/app.css', v=app_version) }}">
+  <script src="{{ url_for('static', filename='scripts/app.js', v=app_version) }}" defer></script>
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <a class="skip-link" href="#main-content">跳到主要内容</a>
+  {% block body %}{% endblock %}
+  <div class="toast-region" aria-live="polite" aria-atomic="true">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+      <div class="toast toast--{{ category }}" data-toast>
+        <i aria-hidden="true"></i><span>{{ message }}</span>
+        <button type="button" class="icon-button icon-button--small" data-dismiss-toast aria-label="关闭">×</button>
+      </div>
+      {% endfor %}
+    {% endwith %}
+    {% block extra_toasts %}{% endblock %}
+  </div>
+  <dialog class="modal app-system-dialog confirm-dialog" data-app-system-dialog data-confirm-dialog aria-labelledby="app-system-dialog-title" aria-describedby="app-system-dialog-message">
+    <div class="app-system-dialog__icon" aria-hidden="true">✦</div>
+    <div class="app-system-dialog__content">
+      <div class="modal__header"><h2 id="app-system-dialog-title" data-app-dialog-title data-confirm-title>确认操作</h2><button class="icon-button" type="button" data-app-dialog-cancel data-confirm-cancel aria-label="关闭">×</button></div>
+      <p id="app-system-dialog-message" data-app-dialog-message data-confirm-copy>这个操作会立即生效。</p>
+      <label class="field app-system-dialog__field" data-app-dialog-field data-system-dialog-field hidden><span class="field__label" data-app-dialog-input-label>输入内容</span><input type="text" data-app-dialog-input data-system-dialog-input autocomplete="off"></label>
+      <div class="button-row button-row--end">
+        <button class="button button--soft" type="button" data-app-dialog-cancel data-confirm-cancel data-dialog-footer-cancel>取消</button>
+        <button class="button button--primary" type="button" data-app-dialog-confirm data-confirm-accept>确认</button>
+      </div>
+    </div>
+  </dialog>
+  <dialog class="image-crop-dialog" data-image-crop-dialog aria-labelledby="image-crop-title">
+    <div class="image-crop-dialog__head"><div><span class="eyebrow">AVATAR STUDIO</span><h2 id="image-crop-title">调整圆形头像</h2></div><button class="icon-button" type="button" data-crop-cancel aria-label="取消调整">×</button></div>
+    <div class="image-crop-stage"><canvas data-crop-canvas aria-label="圆形头像裁剪预览"></canvas><span class="image-crop-stage__hint">拖动图片调整位置</span></div>
+    <div class="image-crop-controls">
+      <div class="image-crop-control"><span>画面比例</span><div class="segmented-control"><button class="is-active" type="button" disabled>圆形 1:1</button></div></div>
+      <label class="image-crop-control image-crop-control--range"><span>缩放</span><input type="range" min="1" max="3" step="0.01" value="1" data-crop-zoom><output data-crop-zoom-value>100%</output></label>
+      <div class="image-crop-control"><span>方向</span><div class="button-row"><button class="button button--soft button--small" type="button" data-crop-rotate="-90">↶ 左转</button><button class="button button--soft button--small" type="button" data-crop-rotate="90">右转 ↷</button></div></div>
+    </div>
+    <div class="image-crop-dialog__actions"><button class="button button--soft" type="button" data-crop-cancel>取消</button><button class="button button--primary" type="button" data-crop-apply>完成圆形裁剪</button></div>
+  </dialog>
+</body>
+</html>

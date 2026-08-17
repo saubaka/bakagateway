@@ -1,0 +1,30 @@
+{% extends "layouts/admin.html" %}
+{% from "components.html" import field_errors, icon %}
+{% block admin_title %}{{ '编辑应用' if client else '新建应用' }}{% endblock %}
+{% block admin_content %}
+{% if new_secret %}<section class="secret-card card"><span class="eyebrow">SAVE IT NOW</span><h2>应用密钥只显示这一次</h2><code>{{ new_secret }}</code><p>离开页面后无法再次查看；如遗失，请轮换密钥。</p></section>{% endif %}
+<section class="card admin-panel form-panel">
+  <form method="post" class="form-grid" novalidate>
+    {{ form.hidden_tag() }}<input type="hidden" name="permissions_present" value="1">
+    <div class="field field--wide client-form-heading"><span class="eyebrow">APPLICATION PROFILE</span><h2>应用资料与登录权限</h2></div>
+    <label class="field"><span class="field__label">{{ form.name.label.text }}</span>{{ form.name() }}{{ field_errors(form.name) }}</label>
+    <label class="field"><span class="field__label">{{ form.homepage_url.label.text }}</span>{{ form.homepage_url() }}{{ field_errors(form.homepage_url) }}</label>
+    <label class="field field--wide"><span class="field__label">{{ form.description.label.text }}</span>{{ form.description(rows='3', placeholder='用一两句话说明应用提供什么服务') }}{{ field_errors(form.description) }}</label>
+    <label class="field"><span class="field__label">{{ form.privacy_policy_url.label.text }}</span>{{ form.privacy_policy_url(placeholder='https://example.com/privacy') }}{{ field_errors(form.privacy_policy_url) }}</label>
+    <label class="field"><span class="field__label">{{ form.service_terms_url.label.text }}</span>{{ form.service_terms_url(placeholder='https://example.com/terms') }}{{ field_errors(form.service_terms_url) }}</label>
+    <label class="field"><span class="field__label">{{ form.icon_url.label.text }}</span>{{ form.icon_url(placeholder='https://example.com/app-icon.png') }}{{ field_errors(form.icon_url) }}</label>
+    <label class="field field--wide"><span class="field__label">{{ form.redirect_uris.label.text }}</span>{{ form.redirect_uris(rows='5', placeholder='https://app.example.com/oauth/callback') }}{{ field_errors(form.redirect_uris) }}</label>
+    <fieldset class="permission-fieldset field--wide">
+      <legend>应用允许申请的资料</legend>
+      <div class="permission-card-grid">
+        {% for field in [form.allow_profile, form.allow_email, form.allow_avatar] %}
+        <label class="permission-card">{{ field() }}<span class="permission-card__check">{{ icon('check') }}</span><strong>{{ field.label.text }}</strong></label>
+        {% endfor %}
+      </div>
+    </fieldset>
+    <label class="check-field field--wide">{{ form.is_active() }}<i></i><span>{{ form.is_active.label.text }}</span></label>
+    <div class="button-row button-row--end field--wide"><a class="button button--soft" href="{{ url_for('admin.clients') }}">返回列表</a><button class="button button--primary" type="submit">保存应用</button></div>
+  </form>
+</section>
+{% if client %}<section class="danger-card card"><div><h2>客户端凭据</h2><p>Client ID：<code>{{ client.client_id }}</code></p></div><form method="post" action="{{ url_for('admin.rotate_secret', client_id=client.id) }}" data-confirm="轮换后旧密钥会立即失效，确定继续吗？">{{ form.csrf_token }}<button class="button button--soft" type="submit">轮换密钥</button></form></section>{% endif %}
+{% endblock %}

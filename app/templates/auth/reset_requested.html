@@ -1,0 +1,7 @@
+{% extends "layouts/auth.html" %}
+{% from "components.html" import auth_intro %}
+{% block title %}恢复申请已提交 · {{ app_name }}{% endblock %}
+{% block auth_content %}
+{{ auth_intro('check','REQUEST RECEIVED','恢复申请已经提交','如果账号存在且可用，管理员会在核验身份后协助重设密码。为保护隐私，网关不会在这里确认账号是否存在。') }}
+<a class="button button--primary button--wide" href="{{ url_for('auth.login') }}">返回登录</a>
+{% endblock %}

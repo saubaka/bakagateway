@@ -1,0 +1,35 @@
+{% macro icon(name) -%}
+<svg class="icon" aria-hidden="true"><use href="{{ url_for('static', filename='icons/sprite.svg') }}#icon-{{ name }}"></use></svg>
+{%- endmacro %}
+
+{% macro app_mark(client, class_name='oauth-app-icon') -%}
+<span class="{{ class_name }} safe-media" data-fallback-media>
+  <span class="safe-media__fallback">{{ icon('project') }}</span>
+  {% if client and client.icon_url %}<img src="{{ client.icon_url }}" alt="" data-fallback-image>{% endif %}
+</span>
+{%- endmacro %}
+
+{% macro user_avatar(user, class_name='avatar') -%}
+<span class="{{ class_name }} safe-media safe-media--avatar" data-fallback-media>
+  <span class="safe-media__fallback">{{ (user.display_name or user.username or '云')[:1] }}</span>
+  {% if user.avatar_filename %}<img src="{{ url_for('auth.avatar', filename=user.avatar_filename) }}" alt="{{ user.display_name }}的头像" data-fallback-image>{% endif %}
+</span>
+{%- endmacro %}
+
+{% macro field_errors(field) -%}
+  {% for error in field.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+{%- endmacro %}
+
+{% macro password_toggle() -%}
+<button class="password-visibility" type="button" data-password-toggle data-compact-target aria-label="显示密码" aria-pressed="false">
+  <span class="password-visibility__show">{{ icon('eye') }}</span>
+  <span class="password-visibility__hide">{{ icon('eye-off') }}</span>
+</button>
+{%- endmacro %}
+
+{% macro auth_intro(icon_name, eyebrow, title, copy='') -%}
+<span class="soft-icon soft-icon--blue auth-icon">{{ icon(icon_name) }}</span>
+<span class="eyebrow">{{ eyebrow }}</span>
+<h1>{{ title }}</h1>
+{% if copy %}<p class="auth-copy">{{ copy }}</p>{% endif %}
+{%- endmacro %}

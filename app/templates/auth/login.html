@@ -1,0 +1,27 @@
+{% extends "layouts/auth.html" %}
+{% from "components.html" import icon, field_errors, password_toggle %}
+{% set auth_centered = true %}
+{% block title %}登录 · {{ app_name }}{% endblock %}
+{% block auth_content %}
+<header class="oauth-app-heading gateway-auth-heading">
+  <span class="oauth-app-icon oauth-app-icon--gateway">{{ icon('cloud') }}</span>
+  <div>
+    <span class="eyebrow">BAKAGATEWAY SIGN IN</span>
+    <h1>登录{{ app_name }}</h1>
+    <p>使用统一账号进入个人中心，并继续访问你主动授权的应用。</p>
+  </div>
+</header>
+<form method="post" class="form-grid auth-form" novalidate data-submit-state data-policy-gated>
+  {{ form.hidden_tag() }}
+  <label class="field"><span class="field__label">{{ form.identifier.label.text }}</span>{{ form.identifier(autocomplete='username', autofocus=true, placeholder='输入baka网关 ID 或邮箱') }}{{ field_errors(form.identifier) }}</label>
+  <label class="field password-field"><span class="field__label">{{ form.password.label.text }}</span>{{ form.password(autocomplete='current-password', placeholder='输入账号密码') }}{{ password_toggle() }}{{ field_errors(form.password) }}</label>
+  <div class="form-between"><label class="check-field">{{ form.remember() }}<i></i><span>{{ form.remember.label.text }}</span></label><a href="{{ url_for('auth.forgot_password') }}">忘记密码</a></div>
+  <label class="check-field policy-check">
+    {{ form.policy_consent(data_policy_consent=true) }}<i></i>
+    <span>我已同意<a href="{{ url_for('auth.privacy_policy') }}" target="_blank" rel="noopener noreferrer">隐私条款</a>和<a href="{{ url_for('auth.service_terms') }}" target="_blank" rel="noopener noreferrer">服务政策</a></span>
+  </label>
+  {{ field_errors(form.policy_consent) }}
+  <button class="button button--primary button--wide" type="submit" data-policy-submit disabled><span>安全登录</span><i class="button-loader"></i></button>
+</form>
+<div class="auth-switch"><span>还没有账号？</span>{% if registration_enabled %}<a href="{{ url_for('auth.register', next=request.args.get('next') or session.get('login_next')) }}">创建新账号</a>{% else %}<span>注册暂未开放</span>{% endif %}</div>
+{% endblock %}

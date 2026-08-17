@@ -1,0 +1,63 @@
+{% extends "layouts/auth.html" %}
+{% from "components.html" import auth_intro, field_errors, password_toggle %}
+{% block title %}创建首位管理员 · {{ app_name }}{% endblock %}
+{% block auth_content %}
+<div class="bootstrap-progress" aria-label="首次启动">
+  <span class="bootstrap-progress__step">首次打开</span>
+  <i aria-hidden="true"></i>
+  <strong>创建管理员</strong>
+</div>
+{{ auth_intro('shield','FIRST ADMINISTRATOR','欢迎第一次打开baka网关','目前还没有管理员。完成这一步后，你将自动登录并进入个人中心。') }}
+<div class="bootstrap-note">
+  <strong>这枚账号将拥有网关管理权限</strong>
+  <small>请使用你长期管理的邮箱和高强度密码。创建成功后，此向导会自动锁定，不再对外开放。</small>
+</div>
+<form method="post" class="form-grid auth-form auth-form--two bootstrap-admin-form" novalidate data-submit-state data-password-match>
+  {{ form.hidden_tag() }}
+  <label class="field">
+    <span class="field__label">{{ form.username.label.text }}</span>
+    {{ form.username(autocomplete='username', autofocus=true, placeholder='例如 cloud.admin') }}
+    {{ field_errors(form.username) }}
+  </label>
+  <label class="field">
+    <span class="field__label">{{ form.display_name.label.text }}</span>
+    {{ form.display_name(autocomplete='name', placeholder='显示在个人中心') }}
+    {{ field_errors(form.display_name) }}
+  </label>
+  <label class="field field--wide">
+    <span class="field__label">{{ form.email.label.text }}</span>
+    {{ form.email(autocomplete='email', placeholder='name@example.com') }}
+    {{ field_errors(form.email) }}
+  </label>
+  <label class="field password-field">
+    <span class="field__label">{{ form.password.label.text }}</span>
+    {{ form.password(autocomplete='new-password', placeholder='至少10位，包含字母和数字') }}
+    {{ password_toggle() }}
+    {{ field_errors(form.password) }}
+  </label>
+  <label class="field password-field">
+    <span class="field__label">{{ form.password_confirm.label.text }}</span>
+    {{ form.password_confirm(autocomplete='new-password', placeholder='再次输入密码') }}
+    {{ password_toggle() }}
+    {{ field_errors(form.password_confirm) }}
+  </label>
+  <button class="button button--primary button--wide field--wide" type="submit">
+    <span>创建首位管理员并进入个人中心</span>
+    <i class="button-loader"></i>
+  </button>
+</form>
+<p class="privacy-note">全部资料只保存在当前baka网关实例中；不会通过此页面写入外部服务。</p>
+<dialog class="modal app-system-dialog password-mismatch-dialog" data-password-mismatch-dialog aria-labelledby="password-mismatch-title" aria-describedby="password-mismatch-message" {% if password_mismatch %}data-open-on-load{% endif %}>
+  <div class="app-system-dialog__icon" aria-hidden="true">✦</div>
+  <div class="app-system-dialog__content">
+    <div class="modal__header">
+      <div><h2 id="password-mismatch-title">两次密码不一致</h2></div>
+      <button class="icon-button" type="button" data-password-mismatch-close aria-label="关闭">×</button>
+    </div>
+    <p id="password-mismatch-message">请重新确认第二次输入的管理员密码，再继续创建账号。</p>
+    <div class="button-row button-row--end">
+      <button class="button button--primary" type="button" data-password-mismatch-close>返回修改</button>
+    </div>
+  </div>
+</dialog>
+{% endblock %}

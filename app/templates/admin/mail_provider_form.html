@@ -1,0 +1,40 @@
+{% extends "layouts/admin.html" %}
+{% from "components.html" import field_errors, icon, password_toggle %}
+{% block admin_title %}{{ '编辑邮件连接' if provider else '添加邮件连接' }}{% endblock %}
+{% block admin_content %}
+<section class="card admin-panel form-panel mail-provider-form-panel">
+  <form method="post" action="{{ url_for('admin.mail_provider_detail', provider_id=provider.id) if provider else url_for('admin.mail_provider_new') }}" class="form-grid" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="field field--wide client-form-heading"><span class="eyebrow">SMTP CONNECTION</span><h2>连接与发件身份</h2></div>
+    <label class="field"><span class="field__label">{{ form.name.label.text }}</span>{{ form.name(placeholder='例如：主要邮件服务') }}{{ field_errors(form.name) }}</label>
+    <label class="field"><span class="field__label">{{ form.host.label.text }}</span>{{ form.host(placeholder='smtp.example.com', autocomplete='off') }}{{ field_errors(form.host) }}</label>
+    <label class="field"><span class="field__label">{{ form.port.label.text }}</span>{{ form.port(inputmode='numeric') }}{{ field_errors(form.port) }}</label>
+    <label class="field"><span class="field__label">{{ form.security_mode.label.text }}</span>{{ form.security_mode() }}{{ field_errors(form.security_mode) }}</label>
+    <label class="field"><span class="field__label">{{ form.username.label.text }}</span>{{ form.username(autocomplete='off', placeholder='可留空') }}{{ field_errors(form.username) }}</label>
+    <label class="field password-field"><span class="field__label">{{ form.password.label.text }}</span>{{ form.password(autocomplete='new-password', placeholder=('留空将保留现有密码' if provider and provider.password_ciphertext else '无需认证时可以留空')) }}{{ password_toggle() }}{{ field_errors(form.password) }}</label>
+    {% if provider and provider.password_ciphertext %}<label class="check-field field--wide">{{ form.clear_password() }}<i></i><span>{{ form.clear_password.label.text }}</span></label>{% endif %}
+    <label class="field"><span class="field__label">{{ form.sender_name.label.text }}</span>{{ form.sender_name() }}{{ field_errors(form.sender_name) }}</label>
+    <label class="field"><span class="field__label">{{ form.sender_email.label.text }}</span>{{ form.sender_email(inputmode='email', autocomplete='off') }}{{ field_errors(form.sender_email) }}</label>
+    <label class="field"><span class="field__label">{{ form.reply_to.label.text }}</span>{{ form.reply_to(inputmode='email', placeholder='可留空') }}{{ field_errors(form.reply_to) }}</label>
+    <label class="field"><span class="field__label">{{ form.timeout_seconds.label.text }}</span>{{ form.timeout_seconds(inputmode='numeric') }}{{ field_errors(form.timeout_seconds) }}</label>
+    <div class="mail-provider-toggle-grid field--wide">
+      <label class="check-field">{{ form.is_active() }}<i></i><span>{{ form.is_active.label.text }}</span></label>
+      <label class="check-field">{{ form.is_default() }}<i></i><span>{{ form.is_default.label.text }}</span>{{ field_errors(form.is_default) }}</label>
+    </div>
+    <div class="button-row button-row--end field--wide"><a class="button button--soft" href="{{ url_for('admin.mail_providers') }}">返回列表</a><button class="button button--primary" type="submit">保存邮件连接</button></div>
+  </form>
+</section>
+{% if provider %}
+<div class="mail-provider-operations">
+  <section class="card mail-operation-card">
+    <span class="soft-icon">{{ icon('shield') }}</span><div><h2>测试SMTP连接</h2><p>检查安全握手和SMTP身份验证，不发送邮件。</p></div>
+    <form method="post" action="{{ url_for('admin.mail_provider_test_connection', provider_id=provider.id) }}" data-submit-state>{{ empty_form.hidden_tag() }}<button class="button button--soft" type="submit"><span>开始测试</span><i class="button-loader"></i></button></form>
+  </section>
+  <section class="card mail-operation-card mail-operation-card--send">
+    <span class="soft-icon soft-icon--blue">{{ icon('mail') }}</span><div><h2>发送测试邮件</h2><p>使用当前连接投递一封固定内容的测试邮件。</p></div>
+    <form method="post" action="{{ url_for('admin.mail_provider_test_email', provider_id=provider.id) }}" class="mail-test-form" data-submit-state novalidate>{{ test_form.hidden_tag() }}<label class="field"><span class="field__label">{{ test_form.recipient.label.text }}</span>{{ test_form.recipient(inputmode='email', placeholder='name@example.com') }}{{ field_errors(test_form.recipient) }}</label><button class="button button--primary" type="submit"><span>发送测试邮件</span><i class="button-loader"></i></button></form>
+  </section>
+</div>
+<section class="danger-card card mail-provider-danger"><div><h2>删除邮件连接</h2><p>删除后不能恢复；如果它是默认连接，系统会选择其他已启用连接。</p></div><form method="post" action="{{ url_for('admin.mail_provider_delete', provider_id=provider.id) }}" data-confirm="删除这条邮件连接吗？已加密保存的SMTP密码也会一并删除。">{{ empty_form.hidden_tag() }}<button class="button button--soft" type="submit">删除连接</button></form></section>
+{% endif %}
+{% endblock %}

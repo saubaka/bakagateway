@@ -1,0 +1,5 @@
+{% extends "layouts/admin.html" %}
+{% block admin_title %}账号管理{% endblock %}
+{% block admin_content %}
+<section class="card admin-panel"><div class="panel-heading"><div><span class="eyebrow">IDENTITIES</span><h2>全部账号</h2></div><span class="badge badge--blue">{{ users|length }} 个账号</span></div><div class="account-list">{% for user in users %}<a href="{{ url_for('admin.user_detail', user_id=user.id) }}"><span class="avatar">{{ user.display_name[:1] }}</span><div><strong>{{ user.display_name }}</strong><small>@{{ user.username }} · {{ user.email }}</small></div><span class="badge badge--{{ 'mint' if user.status == 'active' else 'pink' }}">{{ {'active':'正常','suspended':'停用','locked':'锁定'}.get(user.status,user.status) }}</span><b>›</b></a>{% endfor %}</div></section>
+{% endblock %}

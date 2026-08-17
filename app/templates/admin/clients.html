@@ -1,0 +1,17 @@
+{% extends "layouts/admin.html" %}
+{% from "components.html" import app_mark %}
+{% block admin_title %}接入应用{% endblock %}
+{% block admin_actions %}<a class="button button--primary" href="{{ url_for('admin.client_new') }}">新建应用</a>{% endblock %}
+{% block admin_content %}
+<div class="client-grid">
+  {% for client in clients %}
+  <a class="client-card card card--interactive" href="{{ url_for('admin.client_detail', client_id=client.id) }}">
+    {{ app_mark(client, 'soft-icon client-safe-icon') }}
+    <div><strong>{{ client.name }}</strong><p>{{ client.description or '尚未填写应用说明。' }}</p><small>{{ client.client_id }} · {{ client.scopes }}</small></div>
+    <span class="badge badge--{{ 'blue' if client.is_active else 'pink' }}">{{ '接入中' if client.is_active else '已停用' }}</span>
+  </a>
+  {% else %}
+  <div class="empty-state card"><h2>还没有接入应用</h2><p>创建第一个OAuth客户端，开始统一登录。</p><a class="button button--primary" href="{{ url_for('admin.client_new') }}">创建应用</a></div>
+  {% endfor %}
+</div>
+{% endblock %}

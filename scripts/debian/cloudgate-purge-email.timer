@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily bakagateway email security purge
+
+[Timer]
+OnCalendar=*-*-* 03:15:00
+Persistent=true
+Unit=cloudgate-purge-email.service
+
+[Install]
+WantedBy=timers.target

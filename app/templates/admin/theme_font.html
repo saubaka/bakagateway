@@ -1,0 +1,6 @@
+{% extends "layouts/admin.html" %}
+{% from "components.html" import field_errors %}
+{% block title %}字体 · {{ app_name }}{% endblock %}{% block admin_title %}字体{% endblock %}
+{% block admin_content %}
+<form class="card admin-theme-section motion-card" method="post" data-font-settings>{{ form.hidden_tag() }}<div class="panel-heading"><div><span class="eyebrow">GLOBAL FONT</span><h2>全站字体</h2></div></div><div class="font-choice-grid">{% for option in form.font_style %}<label class="font-choice font-choice--{{ option.data }}">{{ option }}<span><strong>{{ option.label.text }}</strong><small>baka网关 bakagateway · 字体预览 123</small></span></label>{% endfor %}</div>{{ field_errors(form.font_style) }}<footer class="sticky-form-actions">{{ form.submit(class='button button--primary') }}</footer></form>
+{% endblock %}

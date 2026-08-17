@@ -1,0 +1,21 @@
+{% extends "layouts/auth.html" %}
+{% from "components.html" import app_mark, icon %}
+{% set auth_centered = true %}
+{% block title %}正在检测登录状态 · {{ app_name }}{% endblock %}
+{% block auth_content %}
+<section class="gateway-session-check" data-auto-continue data-continue-url="{{ continue_url }}" data-continue-delay="1200">
+  <div class="gateway-session-check__visual" aria-hidden="true">
+    <span class="gateway-session-check__orb">{{ icon('cloud') }}</span>
+    <i></i><i></i><i></i>
+  </div>
+  <span class="eyebrow">VERIFYING BAKAGATEWAY SESSION</span>
+  <h1>正在检测网关登录状态</h1>
+  <p data-auto-continue-copy>{{ '检测到有效的本地登录信息，正在继续……' if authenticated else '没有检测到本地真实登录信息，正在重定向……' }}</p>
+  <div class="gateway-session-progress" aria-label="登录状态检测进度"><i></i></div>
+  <div class="gateway-session-check__app">
+    {{ app_mark(client, 'oauth-app-icon oauth-app-icon--small') }}
+    <strong>{{ client.name }}</strong>
+  </div>
+  <a class="button button--soft button--wide" href="{{ continue_url }}">立即继续</a>
+</section>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends "layouts/admin.html" %}
+{% block admin_title %}运行概览{% endblock %}
+{% block admin_content %}
+<section class="admin-hero card"><div><span class="eyebrow">GATEWAY OVERVIEW</span><h2>baka网关正在安静地守护每一次抵达。</h2><p>账号、应用、会话和安全事件都集中在这个本地网关中。</p></div><span class="live-pill"><i></i>服务正常</span></section>
+<div class="stat-grid">{% for key,label,tone in [('users','账号总数','blue'),('clients','接入应用','pink'),('sessions','活跃会话','mint'),('failures','失败尝试','yellow')] %}<article class="stat-card card stat-card--{{ tone }}"><span>{{ label }}</span><strong>{{ stats[key] }}</strong><small>当前本地记录</small></article>{% endfor %}</div>
+<section class="card admin-panel"><div class="panel-heading"><div><span class="eyebrow">RECENT ACTIVITY</span><h2>最近操作</h2></div><a class="text-link" href="{{ url_for('admin.logs') }}">查看全部</a></div><div class="timeline-list">{% for item in recent %}<article><i></i><div><strong>{{ item.action }}</strong><p>{{ item.summary or item.target_type ~ ' #' ~ item.target_id }}</p></div><time>{{ item.created_at.strftime('%m-%d %H:%M') }}</time></article>{% else %}<div class="empty-compact">暂时没有审计记录。</div>{% endfor %}</div></section>
+{% endblock %}

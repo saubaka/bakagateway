@@ -1,0 +1,32 @@
+{% extends "layouts/base.html" %}
+{% from "components.html" import icon %}
+{% block body_class %}auth-body{% endblock %}
+{% block body %}
+<main class="auth-shell {{ 'auth-shell--centered' if auth_centered|default(false) else '' }}" id="main-content">
+  <a class="site-brand auth-brand" href="{{ url_for('portal.home') }}">
+    <span class="brand-mark">{{ icon('cloud') }}</span>
+    <span>{{ app_name }}<small>{{ app_name_en }}</small></span>
+  </a>
+  <section class="auth-stage {{ 'auth-stage--centered' if auth_centered|default(false) else '' }}">
+    {% if not auth_centered|default(false) %}
+    <aside class="auth-story" aria-label="网关特点">
+      <span class="story-orbit story-orbit--one"></span>
+      <span class="story-orbit story-orbit--two"></span>
+      <div class="auth-story__copy">
+        <span class="eyebrow">ONE GENTLE GATEWAY</span>
+        <h2>轻轻推开一扇门，<br>抵达所有安心空间。</h2>
+        <p>统一身份、细腻反馈和本地优先的安全边界，都被收进同一片浅蓝云朵里。</p>
+      </div>
+      <div class="auth-story__status">
+        <span><i class="status-dot"></i> 网关运行正常</span>
+        <span>OAuth 2.0 · OpenID Connect · PKCE</span>
+      </div>
+    </aside>
+    {% endif %}
+    <section class="auth-card card" data-auth-card>
+      {% block auth_content %}{% endblock %}
+    </section>
+  </section>
+  <footer class="auth-footer"><span>© {{ current_year }} {{ app_name_en }}</span><span>本地优先 · 安全可控 · 柔和响应</span></footer>
+</main>
+{% endblock %}

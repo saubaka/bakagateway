@@ -1,0 +1,19 @@
+{% extends "layouts/auth.html" %}
+{% from "components.html" import app_mark, icon %}
+{% set auth_centered = true %}
+{% block title %}正在返回 {{ client.name }} · {{ app_name }}{% endblock %}
+{% block auth_content %}
+<div class="returning-panel" data-return-countdown data-return-url="{{ return_url }}" data-return-seconds="{{ countdown_seconds }}">
+  {{ app_mark(client, 'oauth-app-icon oauth-app-icon--small') }}
+  <span class="returning-check">{{ icon('check') }}</span>
+  <span class="eyebrow">SIGNED IN SAFELY</span>
+  <h1>登录成功</h1>
+  <p class="auth-copy">baka网关已经准备好你的基础资料，<strong data-return-client>{{ client.name }}</strong>将在倒计时结束后继续接收。</p>
+  <div class="returning-countdown" aria-live="polite">
+    <span data-return-number>{{ countdown_seconds }}</span>
+    <div><strong>秒后返回应用</strong><small>头像、ID、昵称和邮箱将按授权范围传递</small></div>
+  </div>
+  <div class="returning-progress" aria-hidden="true"><i data-return-progress></i></div>
+  <a class="button button--primary button--wide" href="{{ return_url }}">立即返回 {{ client.name }} {{ icon('arrow') }}</a>
+</div>
+{% endblock %}

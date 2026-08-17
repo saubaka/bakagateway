@@ -1,0 +1,37 @@
+{% extends "layouts/admin.html" %}
+{% from "components.html" import icon %}
+{% block admin_title %}邮件服务{% endblock %}
+{% block admin_actions %}<a class="button button--primary" href="{{ url_for('admin.mail_provider_new') }}">添加邮件连接</a>{% endblock %}
+{% block admin_content %}
+<section class="mail-provider-intro card">
+  <span class="soft-icon soft-icon--blue">{{ icon('mail') }}</span>
+  <div><span class="eyebrow">MAIL DELIVERY</span><h2>SMTP邮箱配置</h2></div>
+</section>
+<div class="mail-provider-grid">
+  {% for provider in providers %}
+  <article class="mail-provider-card card card--interactive">
+    <header>
+      <span class="soft-icon">{{ icon('mail') }}</span>
+      <div><h2>{{ provider.name }}</h2><p>{{ provider.host }}:{{ provider.port }}</p></div>
+      <span class="mail-provider-state mail-provider-state--{{ 'ready' if provider.last_test_succeeded else ('error' if provider.last_test_succeeded is sameas false else 'idle') }}" aria-label="{{ '测试通过' if provider.last_test_succeeded else ('测试失败' if provider.last_test_succeeded is sameas false else '尚未测试') }}"></span>
+    </header>
+    <div class="mail-provider-badges">
+      {% if provider.is_default %}<span class="badge badge--blue">默认连接</span>{% endif %}
+      <span class="badge badge--{{ 'mint' if provider.is_active else 'pink' }}">{{ '已启用' if provider.is_active else '已停用' }}</span>
+      <span class="badge badge--yellow">{{ {'starttls':'STARTTLS','ssl':'SSL / TLS','plain':'仅本机'}[provider.security_mode] }}</span>
+    </div>
+    <dl class="mail-provider-facts">
+      <div><dt>发件身份</dt><dd>{{ provider.sender_name }} · {{ provider.sender_email }}</dd></div>
+      <div><dt>身份验证</dt><dd>{{ provider.username or '不使用SMTP账号' }}</dd></div>
+      <div><dt>最近测试</dt><dd>{% if provider.last_tested_at %}{{ provider.last_tested_at.strftime('%Y-%m-%d %H:%M') }} · {{ '通过' if provider.last_test_succeeded else '未通过' }}{% else %}尚未测试{% endif %}</dd></div>
+    </dl>
+    <footer>
+      <a class="button button--soft button--small" href="{{ url_for('admin.mail_provider_detail', provider_id=provider.id) }}">编辑与测试</a>
+      {% if not provider.is_default %}<form method="post" action="{{ url_for('admin.mail_provider_default', provider_id=provider.id) }}">{{ empty_form.hidden_tag() }}<button class="button button--soft button--small" type="submit" {{ 'disabled' if not provider.is_active }}>设为默认</button></form>{% endif %}
+    </footer>
+  </article>
+  {% else %}
+  <section class="empty-state card mail-provider-empty"><span class="soft-icon soft-icon--blue">{{ icon('mail') }}</span><h2>还没有邮件连接</h2><p>添加SMTP连接后，可以先测试连接，再发送一封测试邮件。</p><a class="button button--primary" href="{{ url_for('admin.mail_provider_new') }}">添加第一条连接</a></section>
+  {% endfor %}
+</div>
+{% endblock %}

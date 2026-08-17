@@ -1,0 +1,59 @@
+{% extends "layouts/base.html" %}
+{% from "components.html" import icon, user_avatar %}
+{% macro admin_child(label, description, href, current=false) -%}<a class="{{ 'is-current' if current }}" href="{{ href }}"><span>{{ label }}</span><small>{{ description }}</small></a>{%- endmacro %}
+{% block body_class %}admin-body{% endblock %}
+{% block body %}
+<div class="admin-shell">
+  <aside class="admin-sidebar" data-admin-sidebar>
+    <a class="site-brand admin-brand" href="{{ url_for('admin.dashboard') }}"><span class="brand-mark">{{ icon('cloud') }}</span><span>{{ app_name }}<small>GATEWAY ADMIN</small></span></a>
+    {% set endpoint = request.endpoint or '' %}
+    {% set site_active = endpoint == 'admin.footer_settings' %}
+    {% set theme_active = endpoint in ('admin.theme_font','admin.theme_hints','admin.theme_transitions','admin.theme_dialogs') %}
+    {% set mail_provider_active = endpoint in ('admin.mail_providers','admin.mail_provider_new','admin.mail_provider_detail') %}
+    {% set mail_template_active = endpoint in ('admin.mail_templates','admin.mail_template_detail') %}
+    {% set mail_policy_active = endpoint == 'admin.mail_policy' %}
+    {% set mail_active = mail_provider_active or mail_template_active or mail_policy_active %}
+    <nav class="admin-nav" data-admin-navigation>
+      <section class="admin-nav-group admin-nav-direct {{ 'is-open' if endpoint == 'admin.dashboard' }}" data-admin-menu-group>
+        <a class="admin-nav-group__toggle {{ 'is-current' if endpoint == 'admin.dashboard' }}" href="{{ url_for('admin.dashboard') }}">{{ icon('home') }}<span><strong>运行概览</strong><small>网关状态与最近动作</small></span></a>
+      </section>
+      <section class="admin-nav-group admin-nav-direct {{ 'is-open' if endpoint in ('admin.users','admin.user_detail') }}" data-admin-menu-group>
+        <a class="admin-nav-group__toggle {{ 'is-current' if endpoint in ('admin.users','admin.user_detail') }}" href="{{ url_for('admin.users') }}">{{ icon('person') }}<span><strong>账号管理</strong><small>成员、角色与状态</small></span></a>
+      </section>
+      <section class="admin-nav-group admin-nav-direct {{ 'is-open' if endpoint in ('admin.clients','admin.client_new','admin.client_detail') }}" data-admin-menu-group>
+        <a class="admin-nav-group__toggle {{ 'is-current' if endpoint in ('admin.clients','admin.client_new','admin.client_detail') }}" href="{{ url_for('admin.clients') }}">{{ icon('project') }}<span><strong>接入应用</strong><small>客户端与回调地址</small></span></a>
+      </section>
+      <section class="admin-nav-group {{ 'is-open' if mail_active }}" data-admin-menu-group>
+        <button class="admin-nav-group__toggle" type="button" data-admin-menu-toggle aria-expanded="{{ 'true' if mail_active else 'false' }}">{{ icon('mail') }}<span><strong>邮件与验证</strong><small>发送连接与验证策略</small></span>{{ icon('arrow-down') }}</button>
+        <div class="admin-nav-group__items"><div>
+          {{ admin_child('邮件服务','SMTP连接、默认服务与测试',url_for('admin.mail_providers'),mail_provider_active) }}
+          {{ admin_child('邮件模板','按类型修改主题、正文与参数',url_for('admin.mail_templates'),mail_template_active) }}
+          {{ admin_child('验证策略','管理员邮箱与公开功能开关',url_for('admin.mail_policy'),mail_policy_active) }}
+        </div></div>
+      </section>
+      <section class="admin-nav-group admin-nav-direct {{ 'is-open' if endpoint == 'admin.logs' }}" data-admin-menu-group>
+        <a class="admin-nav-group__toggle {{ 'is-current' if endpoint == 'admin.logs' }}" href="{{ url_for('admin.logs') }}">{{ icon('chart') }}<span><strong>安全记录</strong><small>登录与审计轨迹</small></span></a>
+      </section>
+      <section class="admin-nav-group {{ 'is-open' if site_active }}" data-admin-menu-group>
+        <button class="admin-nav-group__toggle" type="button" data-admin-menu-toggle aria-expanded="{{ 'true' if site_active else 'false' }}">{{ icon('settings') }}<span><strong>站点</strong><small>页尾与全站信息</small></span>{{ icon('arrow-down') }}</button>
+        <div class="admin-nav-group__items"><div>{{ admin_child('页尾内容设置','文字、链接与分组',url_for('admin.footer_settings'),site_active) }}</div></div>
+      </section>
+      <section class="admin-nav-group {{ 'is-open' if theme_active }}" data-admin-menu-group>
+        <button class="admin-nav-group__toggle" type="button" data-admin-menu-toggle aria-expanded="{{ 'true' if theme_active else 'false' }}">{{ icon('spark') }}<span><strong>主题</strong><small>字体、提示、动画与弹窗</small></span>{{ icon('arrow-down') }}</button>
+        <div class="admin-nav-group__items"><div>
+          {{ admin_child('字体','选择全站字体',url_for('admin.theme_font'),endpoint == 'admin.theme_font') }}
+          {{ admin_child('提示','控制后台菜单小标题',url_for('admin.theme_hints'),endpoint == 'admin.theme_hints') }}
+          {{ admin_child('动画','页面过渡、时长与遮罩颜色',url_for('admin.theme_transitions'),endpoint == 'admin.theme_transitions') }}
+          {{ admin_child('弹窗','样式、尺寸、阴影与颜色',url_for('admin.theme_dialogs'),endpoint == 'admin.theme_dialogs') }}
+        </div></div>
+      </section>
+    </nav>
+    <div class="admin-profile">{{ user_avatar(current_user) }}<div><strong>{{ current_user.display_name }}</strong><small>网关管理员</small></div><a class="icon-button icon-button--small" href="{{ url_for('portal.dashboard') }}" aria-label="返回个人中心">↗</a></div>
+  </aside>
+  <div class="admin-workspace">
+    <header class="admin-topbar"><button class="icon-button admin-menu-button" type="button" data-admin-menu aria-label="打开管理菜单">{{ icon('menu') }}</button><div><span class="eyebrow">BAKAGATEWAY CONTROL</span><h1>{% block admin_title %}管理后台{% endblock %}</h1></div><div class="admin-topbar__actions">{% block admin_actions %}{% endblock %}</div></header>
+    <main class="admin-main" id="main-content">{% block admin_content %}{% endblock %}</main>
+  </div>
+  <button class="admin-backdrop" type="button" data-admin-backdrop aria-label="关闭菜单"></button>
+</div>
+{% endblock %}

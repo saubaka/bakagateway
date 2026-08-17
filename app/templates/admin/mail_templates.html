@@ -1,0 +1,27 @@
+{% extends "layouts/admin.html" %}
+{% from "components.html" import icon %}
+{% block admin_title %}邮件模板{% endblock %}
+{% block admin_content %}
+<section class="mail-provider-intro mail-template-intro card card--interactive">
+  <span class="soft-icon soft-icon--blue">{{ icon('mail') }}</span>
+  <div><span class="eyebrow">MAIL TEMPLATES</span><h2>按邮件类型调整主题、正文和可用参数</h2><p>模板会用于真实 SMTP 测试、管理员验证、注册、已有邮箱验证、换邮箱和密码找回；保存时仍会执行服务端安全净化。</p></div>
+</section>
+<div class="mail-template-grid">
+  {% for entry in templates %}
+  <article class="mail-template-card card card--interactive">
+    <header>
+      <span class="soft-icon">{{ icon('mail') }}</span>
+      <div><h2>{{ entry.definition.name }}</h2><p>{{ entry.item.subject }}</p></div>
+      <span class="badge badge--{{ 'blue' if entry.custom else 'mint' }}">{{ '已自定义' if entry.custom else '默认模板' }}</span>
+    </header>
+    <p class="mail-template-description">{{ entry.definition.description }}</p>
+    <dl class="mail-provider-facts">
+      <div><dt>模板类型</dt><dd>{{ entry.item.key }}</dd></div>
+      <div><dt>可用参数</dt><dd>{{ entry.variables|length }} 项</dd></div>
+      <div><dt>最近更新</dt><dd>{{ entry.item.updated_at.strftime('%Y-%m-%d %H:%M') }}</dd></div>
+    </dl>
+    <footer><a class="button button--soft button--small" href="{{ url_for('admin.mail_template_detail', template_id=entry.item.id) }}">编辑模板</a></footer>
+  </article>
+  {% endfor %}
+</div>
+{% endblock %}

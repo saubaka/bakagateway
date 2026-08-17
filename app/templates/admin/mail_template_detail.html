@@ -1,0 +1,51 @@
+{% extends "layouts/admin.html" %}
+{% from "components.html" import field_errors, icon %}
+{% block admin_title %}编辑邮件模板{% endblock %}
+{% block admin_actions %}<a class="button button--soft" href="{{ url_for('admin.mail_templates') }}">返回模板列表</a>{% endblock %}
+{% block admin_content %}
+<section class="mail-provider-intro mail-template-intro card card--interactive">
+  <span class="soft-icon soft-icon--blue">{{ icon('mail') }}</span>
+  <div><span class="eyebrow">{{ item.key }}</span><h2>{{ definition.name }}</h2><p>{{ definition.description }}</p></div>
+  <span class="badge badge--{{ 'blue' if custom else 'mint' }}">{{ '已自定义' if custom else '默认模板' }}</span>
+</section>
+
+<div class="mail-template-workbench">
+  <section class="card admin-panel form-panel mail-template-panel">
+    <form method="post" class="mail-template-form" data-mail-template-form novalidate>
+      {{ form.hidden_tag() }}
+      <div class="field field--wide client-form-heading"><span class="eyebrow">TEMPLATE CONTENT</span><h2>主题与正文</h2></div>
+      <label class="field field--wide"><span class="field__label">{{ form.subject.label.text }}</span>{{ form.subject(maxlength='150', placeholder='请输入邮件主题') }}{{ field_errors(form.subject) }}</label>
+      <div class="field field--wide mail-template-source"><span class="field__label">{{ form.body_html.label.text }}</span>{{ form.body_html(rows='14', spellcheck='false') }}{{ field_errors(form.body_html) }}</div>
+      <div class="mail-template-editor-shell field--wide">
+        <div class="mail-template-toolbar" aria-label="邮件正文编辑工具">
+          <button type="button" data-mail-command="bold"><strong>B</strong><span>加粗</span></button>
+          <button type="button" data-mail-command="italic"><em>I</em><span>斜体</span></button>
+          <button type="button" data-mail-command="underline"><u>U</u><span>下划线</span></button>
+          <button type="button" data-mail-command="insertUnorderedList"><span>• 列表</span></button>
+          <button type="button" data-mail-command="createLink"><span>链接</span></button>
+          <button type="button" data-mail-command="removeFormat"><span>清除格式</span></button>
+          <button type="button" class="mail-template-view-toggle" data-mail-preview-toggle aria-pressed="false"><span>预览</span></button>
+        </div>
+        <div class="mail-template-canvas">
+          <div class="mail-template-editor" contenteditable="true" data-mail-template-editor data-target="body_html" aria-label="邮件正文可视化编辑器">{{ form.body_html.data|safe }}</div>
+          <div class="mail-template-preview" data-mail-template-preview aria-hidden="true"></div>
+        </div>
+      </div>
+      <div class="button-row button-row--end field--wide"><a class="button button--soft" href="{{ url_for('admin.mail_templates') }}">取消</a><button class="button button--primary" type="submit">保存邮件模板</button></div>
+    </form>
+  </section>
+
+  <aside class="card mail-template-parameters">
+    <div class="panel-heading"><div><span class="eyebrow">PARAMETERS</span><h2>可插入参数</h2><p>点击按钮插入到正文光标位置；保存时会校验未知参数和必填参数。</p></div></div>
+    <div class="mail-template-variable-list">
+      {% for variable in variables %}
+      <button class="mail-template-variable" type="button" data-insert-variable="{{ variable.name }}" data-sample="{{ sample_variables.get(variable.name, variable.sample) }}">
+        <span><strong>{{ variable.label }}</strong><code>{{ '{{ ' ~ variable.name ~ ' }}' }}</code></span>
+        <small>示例：{{ sample_variables.get(variable.name, variable.sample) }}{% if variable.required %}<b>必填</b>{% endif %}</small>
+      </button>
+      {% endfor %}
+    </div>
+    <form method="post" action="{{ url_for('admin.mail_template_reset', template_id=item.id) }}" data-confirm="恢复该邮件类型的默认模板吗？当前自定义内容会被覆盖。">{{ empty_form.hidden_tag() }}<button class="button button--soft" type="submit">恢复默认模板</button></form>
+  </aside>
+</div>
+{% endblock %}

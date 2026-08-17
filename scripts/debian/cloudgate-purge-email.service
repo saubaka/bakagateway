@@ -1,0 +1,11 @@
+[Unit]
+Description=Purge expired bakagateway email verification records
+After=network.target
+
+[Service]
+Type=oneshot
+# Replace these paths with the real bakagateway install location and venv.
+WorkingDirectory=/opt/bakagateway
+Environment=CLOUD_GATEWAY_ENV=production
+ExecStart=/opt/bakagateway/.venv/bin/flask --app wsgi:app purge-email-security
+Nice=10

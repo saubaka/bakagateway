@@ -1,0 +1,10 @@
+{% extends "layouts/app.html" %}
+{% from "components.html" import icon %}
+{% block title %}登录设备 · {{ app_name }}{% endblock %}
+{% block app_content %}
+<header class="portal-title-block"><span class="eyebrow">SIGNED-IN DEVICES</span><h1>登录设备</h1><p>查看所有有效会话，并让不再使用的设备立即退出。</p></header>
+<div class="device-card-list">
+  {% for item in sessions %}<article class="device-session-card card motion-card"><span class="device-icon">{{ icon('code') }}</span><div><div class="device-session-card__title"><strong>{{ '当前设备' if current_session and current_session.id == item.id else '已登录设备' }}</strong>{% if current_session and current_session.id == item.id %}<span class="badge badge--mint">正在使用</span>{% endif %}</div><p>{{ item.user_agent or '未知浏览器与设备' }}</p><small>最近活动 {{ item.last_seen_at.strftime('%Y-%m-%d %H:%M') }} · 登录于 {{ item.created_at.strftime('%Y-%m-%d %H:%M') }}</small></div>{% if not current_session or current_session.id != item.id %}<form method="post" action="{{ url_for('portal.revoke_device', session_id=item.id) }}" data-confirm="确定要踢出这台登录设备吗？">{{ empty_form.hidden_tag() }}<button class="button button--soft button--small" type="submit">踢出设备</button></form>{% endif %}</article>{% endfor %}
+</div>
+<form class="logout-row" method="post" action="{{ url_for('auth.logout') }}">{{ empty_form.hidden_tag() }}<button class="button button--soft" type="submit">安全退出当前账号</button></form>
+{% endblock %}

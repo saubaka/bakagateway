@@ -1,0 +1,6 @@
+{% extends "layouts/base.html" %}
+{% from "components.html" import icon %}
+{% block title %}{{ code }} · {{ app_name }}{% endblock %}
+{% block body %}
+<main class="error-shell" id="main-content"><a class="site-brand" href="{{ url_for('portal.home') }}"><span class="brand-mark">{{ icon('cloud') }}</span><span>{{ app_name }}<small>{{ app_name_en }}</small></span></a><section class="error-card card"><span class="error-code">{{ code }}</span><span class="soft-icon soft-icon--pink">{{ icon('alert') }}</span><h1>{{ title }}</h1><p>入口仍然安全，稍后重试或返回baka网关首页即可。</p><a class="button button--primary" href="{{ url_for('portal.home') }}">回到首页</a></section></main>
+{% endblock %}

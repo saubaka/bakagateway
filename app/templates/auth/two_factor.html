@@ -1,0 +1,12 @@
+{% extends "layouts/auth.html" %}
+{% from "components.html" import auth_intro, field_errors %}
+{% block title %}双重验证 · {{ app_name }}{% endblock %}
+{% block auth_content %}
+{{ auth_intro('check','SECOND STEP','再确认一次是你','打开验证器，输入当前显示的六位数字。') }}
+<form method="post" class="form-grid auth-form" novalidate data-submit-state>
+  {{ form.hidden_tag() }}
+  <label class="field code-field"><span class="field__label">{{ form.code.label.text }}</span>{{ form.code(inputmode='numeric', autocomplete='one-time-code', maxlength='6', autofocus=true, placeholder='000000') }}{{ field_errors(form.code) }}</label>
+  <button class="button button--primary button--wide" type="submit"><span>完成验证</span><i class="button-loader"></i></button>
+</form>
+<div class="auth-switch"><a href="{{ url_for('auth.login') }}">返回重新登录</a></div>
+{% endblock %}

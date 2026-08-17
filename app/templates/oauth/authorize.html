@@ -1,0 +1,55 @@
+{% extends "layouts/auth.html" %}
+{% from "components.html" import app_mark, field_errors, icon %}
+{% set auth_centered = true %}
+{% block title %}设置 {{ client.name }} 的权限 · {{ app_name }}{% endblock %}
+{% block auth_content %}
+<header class="oauth-app-heading oauth-app-heading--consent">
+  {{ app_mark(client) }}
+  <div>
+    <span class="eyebrow">APPLICATION PERMISSIONS</span>
+    <h1>{{ client.name }}</h1>
+    <p>{{ client.description or '这个应用希望通过baka网关确认你的身份。' }}</p>
+  </div>
+</header>
+<section class="oauth-app-summary">
+  <div><strong>应用首页</strong><a href="{{ client.homepage_url }}" target="_blank" rel="noopener noreferrer">{{ client.homepage_url }}</a></div>
+  <div><strong>登录方式</strong><span>OAuth 2.0 · OpenID Connect · PKCE</span></div>
+</section>
+<form method="post" class="consent-form" novalidate data-policy-gated>
+  {{ form.hidden_tag() }}
+  <input type="hidden" name="permissions_present" value="1">
+  <fieldset class="permission-fieldset">
+    <legend>选择授权权限</legend>
+    <div class="permission-card-grid permission-card-grid--consent">
+      <label class="permission-card permission-card--fixed">
+        <input type="checkbox" checked disabled>
+        <span class="permission-card__check">{{ icon('check') }}</span>
+        <strong>确认基础身份</strong>
+      </label>
+      {% for permission in permissions %}
+      <label class="permission-card">
+        <input type="checkbox" name="permissions" value="{{ permission.scope }}" {% if permission.selected %}checked{% endif %}>
+        <span class="permission-card__check">{{ icon('check') }}</span>
+        <strong>{{ permission.label }}</strong>
+      </label>
+      {% endfor %}
+    </div>
+  </fieldset>
+  <label class="check-field policy-check application-policy-check">
+    {{ form.policy_consent(data_policy_consent=true) }}<i></i>
+    <span>我同意{{ client.name }}的
+      {% if client.service_terms_url %}<a href="{{ client.service_terms_url }}" target="_blank" rel="noopener noreferrer">服务政策</a>{% else %}<span>服务政策</span>{% endif %}
+      和
+      {% if client.privacy_policy_url %}<a href="{{ client.privacy_policy_url }}" target="_blank" rel="noopener noreferrer">隐私条款</a>{% else %}<span>隐私条款</span>{% endif %}
+    </span>
+  </label>
+  {{ field_errors(form.policy_consent) }}
+  <div class="consent-actions consent-actions--next">
+    <button class="button button--soft" type="submit" name="decision" value="deny" formnovalidate>返回应用</button>
+    <button class="button button--primary" type="submit" name="decision" value="next" data-policy-submit disabled>进入下一步</button>
+  </div>
+</form>
+<footer class="oauth-consent-footer">
+  <span>{{ icon('shield') }}至少保留基础身份；其他资料均可拒绝。</span>
+</footer>
+{% endblock %}

@@ -1,0 +1,1 @@
+"""bakagateway blueprints."""

@@ -1,0 +1,20 @@
+{% extends "layouts/admin.html" %}
+{% block title %}提示 · {{ app_name }}{% endblock %}
+{% block admin_title %}提示{% endblock %}
+{% block admin_content %}
+<section class="card admin-theme-section motion-card">
+  <div class="panel-heading">
+    <div><span class="eyebrow">ADMIN MENU</span><h2>菜单小标题</h2></div>
+    <span class="badge badge--{{ 'mint' if subtitles_visible else 'yellow' }}">{{ '显示中' if subtitles_visible else '已关闭' }}</span>
+  </div>
+  <p>控制管理后台母菜单和子菜单的说明文字密度，主菜单名称与功能不会被隐藏。</p>
+  <div class="menu-subtitle-preview {{ '' if subtitles_visible else 'is-compact' }}" aria-hidden="true">
+    <span>主题<small>字体、提示、动画与弹窗</small></span>
+    <span>提示<small>控制菜单信息密度</small></span>
+  </div>
+  <form method="post">
+    {{ form.hidden_tag() }}
+    <button class="button {{ 'button--soft' if subtitles_visible else 'button--primary' }}" type="submit">{{ '一键关闭小标题' if subtitles_visible else '一键显示小标题' }}</button>
+  </form>
+</section>
+{% endblock %}

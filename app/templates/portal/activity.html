@@ -1,0 +1,9 @@
+{% extends "layouts/app.html" %}
+{% from "components.html" import icon %}
+{% block title %}操作日志 · {{ app_name }}{% endblock %}
+{% block app_content %}
+<header class="portal-title-block"><span class="eyebrow">ACCOUNT ACTIVITY</span><h1>操作日志</h1><p>登录、资料修改、2FA管理和设备踢出都会被清楚记录。</p></header>
+<section class="activity-log card motion-card">
+  {% for item in entries %}<article class="activity-log__item"><span class="activity-log__mark activity-log__mark--{{ item.tone }}">{{ icon('check' if item.tone == 'mint' else 'chart') }}</span><div><div><strong>{{ item.title }}</strong><span class="badge badge--{{ item.tone }}">{{ item.kind }}</span></div><p>{{ item.summary }}</p></div><time>{{ item.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</time></article>{% else %}<div class="empty-compact">还没有账号操作记录。</div>{% endfor %}
+</section>
+{% endblock %}

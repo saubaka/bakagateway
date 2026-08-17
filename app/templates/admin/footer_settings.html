@@ -1,0 +1,13 @@
+{% extends "layouts/admin.html" %}
+{% block title %}页尾内容设置 · {{ app_name }}{% endblock %}
+{% block admin_title %}页尾内容设置{% endblock %}
+{% block admin_content %}
+<form class="footer-settings-editor" method="post" data-footer-editor>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="footer_columns" data-footer-columns-value>
+  <section class="card admin-theme-section motion-card"><span class="eyebrow">FOOTER IDENTITY</span><div class="form-grid"><label class="field field--wide"><span class="field__label">页尾介绍</span><textarea name="description" rows="3">{{ footer.description }}</textarea></label><label class="field field--wide"><span class="field__label">版权与结尾文字</span><input name="copyright" value="{{ footer.copyright }}"></label></div></section>
+  <section class="card admin-theme-section motion-card"><div class="section-heading"><div><span class="eyebrow">FOOTER COLUMNS</span><h2>链接分组</h2></div><button class="button button--soft" type="button" data-add-footer-column>＋ 添加分组</button></div><div class="footer-column-editor" data-footer-column-list>{% for column in footer.columns %}<article class="footer-column-card card" data-footer-column><header><input data-footer-column-title value="{{ column.title }}" aria-label="分组标题"><button class="icon-button icon-button--small" type="button" data-remove-footer-column>×</button></header><div data-footer-link-list>{% for link in column.links %}<div class="footer-link-row" data-footer-link><input data-footer-link-label value="{{ link.label }}" aria-label="链接名称"><input data-footer-link-url value="{{ link.url }}" aria-label="链接地址"><button class="icon-button icon-button--small" type="button" data-remove-footer-link>×</button></div>{% endfor %}</div><button class="button button--soft button--small" type="button" data-add-footer-link>＋ 添加链接</button></article>{% endfor %}</div></section>
+  <footer class="card sticky-form-actions"><button class="button button--primary">保存页尾内容</button></footer>
+</form>
+<template data-footer-column-template><article class="footer-column-card card" data-footer-column><header><input data-footer-column-title value="新分组"><button class="icon-button icon-button--small" type="button" data-remove-footer-column>×</button></header><div data-footer-link-list></div><button class="button button--soft button--small" type="button" data-add-footer-link>＋ 添加链接</button></article></template>
+<template data-footer-link-template><div class="footer-link-row" data-footer-link><input data-footer-link-label placeholder="链接名称"><input data-footer-link-url placeholder="/path/"><button class="icon-button icon-button--small" type="button" data-remove-footer-link>×</button></div></template>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "layouts/auth.html" %}
+{% from "components.html" import icon %}
+{% set auth_centered = true %}
+{% block title %}隐私条款 · {{ app_name }}{% endblock %}
+{% block auth_content %}
+<article class="policy-document">
+  <span class="oauth-app-icon oauth-app-icon--gateway">{{ icon('shield') }}</span>
+  <span class="eyebrow">PRIVACY POLICY</span>
+  <h1>隐私条款</h1>
+  <section><h2>本地保存</h2><p>baka网关只在当前实例中保存账号资料、经过哈希处理的密码、服务器端登录会话和你对应用作出的授权选择。</p></section>
+  <section><h2>应用访问</h2><p>应用只能获得你在授权页面明确允许的资料。密码、双重验证码、登录设备详情和未列出的资料不会提供给应用。</p></section>
+  <section><h2>登录 Cookie</h2><p>Cookie 仅保存经过签名的会话标识；服务器会同步核验真实会话。勾选保持登录后，有效期最长为三十天，并可在登录设备页面随时撤销。</p></section>
+  <a class="button button--soft button--wide" href="{{ request.referrer or url_for('auth.login') }}">返回上一页</a>
+</article>
+{% endblock %}
