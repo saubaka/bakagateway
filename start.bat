@@ -160,7 +160,7 @@ if "%CLOUDGATE_MODE%"=="admin" (
 )
 
 echo.
-echo [START] bakagateway v1.14.0
+echo [START] bakagateway v1.14.1
 echo URL: http://%CLOUD_GATEWAY_HOST%:%CLOUD_GATEWAY_PORT%
 echo Press Ctrl+C to stop the local server.
 echo.
