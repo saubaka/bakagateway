@@ -43,9 +43,9 @@
 
 <form class="card admin-panel mail-policy-form" method="post" novalidate>
   {{ form.hidden_tag() }}
-  <div class="panel-heading"><div><span class="eyebrow">PUBLIC EMAIL POLICY</span><h2>公开邮箱流程</h2><p>这些开关将作为后续注册、资料验证和密码找回流程的服务器端总闸。</p></div><span class="badge badge--{{ 'mint' if readiness.ready else 'yellow' }}">{{ '可以启用' if readiness.ready else '尚未解锁' }}</span></div>
+  <div class="panel-heading"><div><span class="eyebrow">PUBLIC EMAIL POLICY</span><h2>公开邮箱流程</h2><p>这些开关将作为注册、资料验证、密码找回与新环境登录流程的服务器端总闸。</p></div><span class="badge badge--{{ 'mint' if readiness.ready else 'yellow' }}">{{ '可以启用' if readiness.ready else '尚未解锁' }}</span></div>
   <div class="mail-policy-option-grid">
-    {% for field,icon_name,copy in [(form.registration_enabled,'person','新账号必须先验证邮箱，再建立正式身份。'),(form.profile_verification_enabled,'mail','已有账号可以验证当前已经绑定的邮箱。'),(form.password_reset_enabled,'shield','密码找回必须验证账号绑定邮箱后才能继续。')] %}
+    {% for field,icon_name,copy in [(form.registration_enabled,'person','新账号必须先验证邮箱，再建立正式身份。'),(form.profile_verification_enabled,'mail','已有账号可以验证当前已经绑定的邮箱。'),(form.password_reset_enabled,'shield','密码找回必须验证账号绑定邮箱后才能继续。'),(form.login_verification_enabled,'check','新设备或新网络登录时，先验证绑定邮箱再建立会话；邮件服务故障时自动停用。')] %}
     <label class="mail-policy-option-card {{ 'is-disabled' if not readiness.ready }}">{{ field(disabled=not readiness.ready) }}<span class="mail-policy-option-mark"><i></i>{{ icon(icon_name) }}</span><span><strong>{{ field.label.text }}</strong><small>{{ copy }}</small></span></label>
     {% endfor %}
   </div>

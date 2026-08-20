@@ -177,6 +177,14 @@ MAIL_TEMPLATE_DEFINITIONS: tuple[MailTemplateDefinition, ...] = (
         body_html=_code_html("找回baka网关账号密码"),
         variables=_verification_variables(),
     ),
+    MailTemplateDefinition(
+        key="login_verification",
+        name="新环境登录验证码",
+        description="检测到新设备或新网络登录时，先验证账号绑定邮箱再建立登录会话。",
+        subject="{{ app_name }}登录验证码",
+        body_html=_code_html("在新设备或新网络验证baka网关账号登录"),
+        variables=_verification_variables(),
+    ),
 )
 MAIL_TEMPLATE_DEFINITION_MAP = {item.key: item for item in MAIL_TEMPLATE_DEFINITIONS}
 MAIL_TEMPLATE_KEYS = frozenset(MAIL_TEMPLATE_DEFINITION_MAP)

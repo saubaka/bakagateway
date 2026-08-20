@@ -16,7 +16,7 @@ from app.models import (
     User,
     UserSession,
 )
-from app.security import hash_token, new_token, request_fingerprint
+from app.security import hash_token, new_token, request_client_ip_digest, request_fingerprint
 
 
 def aware(value: datetime | None) -> datetime | None:
@@ -75,9 +75,37 @@ def record_login(identifier: str, user: User | None, success: bool, reason: str)
             identifier=identifier[:254],
             success=success,
             fingerprint=request_fingerprint("login"),
+            client_ip_digest=request_client_ip_digest(),
             reason=reason[:80],
         )
     )
+
+
+def unrecognized_login_context(user: User) -> bool:
+    """True when the current device or network has no prior successful login."""
+    fingerprint = request_fingerprint("login")
+    ip_digest = request_client_ip_digest()
+    known_device = (
+        db.session.scalar(
+            db.select(db.func.count(LoginLog.id)).where(
+                LoginLog.user_id == user.id,
+                LoginLog.success.is_(True),
+                LoginLog.fingerprint == fingerprint,
+            )
+        )
+        or 0
+    )
+    known_network = (
+        db.session.scalar(
+            db.select(db.func.count(LoginLog.id)).where(
+                LoginLog.user_id == user.id,
+                LoginLog.success.is_(True),
+                LoginLog.client_ip_digest == ip_digest,
+            )
+        )
+        or 0
+    )
+    return known_device == 0 or known_network == 0
 
 
 def recent_login_failures(identifier: str) -> int:

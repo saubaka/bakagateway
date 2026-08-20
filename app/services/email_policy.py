@@ -13,6 +13,7 @@ class EmailFeaturePolicy:
     registration_enabled: bool = False
     profile_verification_enabled: bool = False
     password_reset_enabled: bool = False
+    login_verification_enabled: bool = False
     code_ttl_minutes: int = 10
     resend_seconds: int = 60
     max_attempts: int = 5
@@ -43,6 +44,7 @@ def load_email_policy() -> EmailFeaturePolicy:
         registration_enabled=_boolean_setting("email_registration_enabled"),
         profile_verification_enabled=_boolean_setting("email_profile_verification_enabled"),
         password_reset_enabled=_boolean_setting("email_password_reset_enabled"),
+        login_verification_enabled=_boolean_setting("email_login_verification_enabled"),
         code_ttl_minutes=_integer_setting("email_code_ttl_minutes", 10, frozenset({5, 10, 15})),
         resend_seconds=_integer_setting("email_resend_seconds", 60, frozenset({60, 90, 120, 300})),
         max_attempts=_integer_setting("email_max_attempts", 5, frozenset({3, 4, 5})),
@@ -62,9 +64,22 @@ def save_email_policy(policy: EmailFeaturePolicy) -> None:
         "email_password_reset_enabled",
         "true" if policy.password_reset_enabled else "false",
     )
+    set_setting(
+        "email_login_verification_enabled",
+        "true" if policy.login_verification_enabled else "false",
+    )
     set_setting("email_code_ttl_minutes", str(policy.code_ttl_minutes))
     set_setting("email_resend_seconds", str(policy.resend_seconds))
     set_setting("email_max_attempts", str(policy.max_attempts))
+
+
+def record_email_delivery_health(healthy: bool) -> None:
+    """Delivery attempts double as health probes for mail-backed login checks."""
+    set_setting("email_delivery_health", "ok" if healthy else "failed")
+
+
+def email_delivery_healthy() -> bool:
+    return get_setting("email_delivery_health", "ok").strip().lower() != "failed"
 
 
 def default_mail_provider() -> MailProvider | None:
@@ -121,4 +136,9 @@ def effective_email_features() -> dict[str, bool]:
         "registration": ready and policy.registration_enabled,
         "profile_verification": ready and policy.profile_verification_enabled,
         "password_reset": ready and policy.password_reset_enabled,
+        "login_verification": (
+            ready
+            and policy.login_verification_enabled
+            and email_delivery_healthy()
+        ),
     }

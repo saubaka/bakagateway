@@ -58,6 +58,7 @@ from app.services.email_policy import (
     EmailFeaturePolicy,
     email_policy_readiness,
     load_email_policy,
+    record_email_delivery_health,
     save_email_policy,
 )
 from app.services.email_security import (
@@ -439,6 +440,7 @@ def _record_provider_test(item: MailProvider, succeeded: bool, error_code: str =
     item.last_tested_at = datetime.now(UTC)
     item.last_test_succeeded = succeeded
     item.last_test_error = error_code[:240]
+    record_email_delivery_health(succeeded)
 
 
 def _masked_email(value: str | None) -> str:
@@ -511,6 +513,7 @@ def mail_policy():
         form.registration_enabled.data = policy.registration_enabled
         form.profile_verification_enabled.data = policy.profile_verification_enabled
         form.password_reset_enabled.data = policy.password_reset_enabled
+        form.login_verification_enabled.data = policy.login_verification_enabled
         form.code_ttl_minutes.data = policy.code_ttl_minutes
         form.resend_seconds.data = policy.resend_seconds
         form.max_attempts.data = policy.max_attempts
@@ -519,6 +522,7 @@ def mail_policy():
             registration_enabled=bool(form.registration_enabled.data),
             profile_verification_enabled=bool(form.profile_verification_enabled.data),
             password_reset_enabled=bool(form.password_reset_enabled.data),
+            login_verification_enabled=bool(form.login_verification_enabled.data),
             code_ttl_minutes=form.code_ttl_minutes.data,
             resend_seconds=form.resend_seconds.data,
             max_attempts=form.max_attempts.data,
@@ -528,6 +532,7 @@ def mail_policy():
                 candidate.registration_enabled,
                 candidate.profile_verification_enabled,
                 candidate.password_reset_enabled,
+                candidate.login_verification_enabled,
             )
         )
         readiness = email_policy_readiness(current_user)
@@ -549,6 +554,7 @@ def mail_policy():
                     f"registration={candidate.registration_enabled};"
                     f"profile={candidate.profile_verification_enabled};"
                     f"password_reset={candidate.password_reset_enabled};"
+                    f"login_verification={candidate.login_verification_enabled};"
                     f"ttl={candidate.code_ttl_minutes};"
                     f"resend={candidate.resend_seconds};"
                     f"attempts={candidate.max_attempts}"

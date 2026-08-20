@@ -349,6 +349,7 @@ class EmailPolicyForm(FlaskForm):
     registration_enabled = BooleanField("注册必须完成邮箱验证")
     profile_verification_enabled = BooleanField("允许账号验证已有邮箱")
     password_reset_enabled = BooleanField("允许通过邮箱安全找回密码")
+    login_verification_enabled = BooleanField("新设备或新网络登录需要邮箱验证")
     code_ttl_minutes = RadioField(
         "验证码有效时间",
         choices=[(5, "5 分钟"), (10, "10 分钟（推荐）"), (15, "15 分钟")],

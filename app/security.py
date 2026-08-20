@@ -33,6 +33,14 @@ def request_fingerprint(scope: str) -> str:
     return hmac.new(current_app.secret_key.encode(), material, hashlib.sha256).hexdigest()
 
 
+def request_client_ip_digest() -> str:
+    """Keyed digest of the client address only, used to detect new networks."""
+    forwarded = request.headers.get("X-Forwarded-For", "")
+    address = forwarded.split(",", 1)[0].strip() if forwarded else (request.remote_addr or "")
+    material = f"client-ip|{address}".encode()
+    return hmac.new(current_app.secret_key.encode(), material, hashlib.sha256).hexdigest()
+
+
 def is_safe_local_url(value: str | None) -> bool:
     if not value:
         return False

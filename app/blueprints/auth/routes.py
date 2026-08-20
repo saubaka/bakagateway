@@ -65,11 +65,13 @@ from app.services.auth import (
     record_login,
     revoke_session,
     seed_roles,
+    unrecognized_login_context,
 )
 from app.services.email_policy import (
     default_mail_provider,
     effective_email_features,
     load_email_policy,
+    record_email_delivery_health,
 )
 from app.services.email_security import (
     ChallengeRateLimited,
@@ -184,6 +186,40 @@ def _registration_enabled() -> bool:
     return effective_email_features()["registration"]
 
 
+def _login_email_verification_required(user: User) -> bool:
+    """Login email step activates only with a healthy, enabled mail policy."""
+    return bool(
+        effective_email_features()["login_verification"]
+        and user.email
+        and user.email_verified
+        and unrecognized_login_context(user)
+    )
+
+
+def _clear_preauth() -> None:
+    session.pop("preauth_user_id", None)
+    session.pop("preauth_remember", None)
+    session.pop("preauth_expires", None)
+    session.pop("preauth_email_pending", None)
+
+
+def _preauth_email_user() -> User | None:
+    if not session.get("preauth_email_pending"):
+        return None
+    user_id = session.get("preauth_user_id")
+    expires = session.get("preauth_expires", 0)
+    user = db.session.get(User, user_id) if user_id else None
+    if (
+        user is None
+        or not user.is_active
+        or not user.email
+        or int(expires) < int(datetime.now(UTC).timestamp())
+    ):
+        _clear_preauth()
+        return None
+    return user
+
+
 def _masked_email(value: str | None) -> str:
     if not value or "@" not in value:
         return "未填写邮箱"
@@ -275,6 +311,8 @@ def _email_template_key(purpose: str, verification_kind: str) -> str:
         return "change_email"
     if purpose == "password_reset":
         return "password_reset"
+    if purpose == "login_verification":
+        return "login_verification"
     return "account_email_verification"
 
 
@@ -299,17 +337,28 @@ def _deliver_email_challenge(
         request_fingerprint=request_fingerprint(fingerprint_scope),
         policy=policy.challenge_policy(),
     )
-    send_verification_code(
-        provider,
-        recipient,
-        code,
-        ttl_minutes=policy.code_ttl_minutes,
-        verification_kind=verification_kind,
-        template_key=_email_template_key(purpose, verification_kind),
-    )
+    try:
+        send_verification_code(
+            provider,
+            recipient,
+            code,
+            ttl_minutes=policy.code_ttl_minutes,
+            verification_kind=verification_kind,
+            template_key=_email_template_key(purpose, verification_kind),
+        )
+    except MailDeliveryError:
+        # Every delivery attempt doubles as a health probe: a failed delivery
+        # suspends the mail-backed login step until deliveries recover, while
+        # leaving the other public mail flows on their existing readiness
+        # checks.
+        db.session.rollback()
+        record_email_delivery_health(False)
+        db.session.commit()
+        raise
     provider.last_tested_at = datetime.now(UTC)
     provider.last_test_succeeded = True
     provider.last_test_error = ""
+    record_email_delivery_health(True)
     return challenge
 
 
@@ -326,11 +375,14 @@ def _render_email_verification(
     resend_remaining, expires_remaining = _verification_timing(challenge)
     registration_mode = verification_mode == "registration"
     change_mode = verification_mode == "change_email"
+    login_mode = verification_mode == "login_verification"
     if resend_url is None:
         if registration_mode:
             resend_url = url_for("auth.registration_email_resend")
         elif change_mode:
             resend_url = url_for("auth.change_email_resend")
+        elif login_mode:
+            resend_url = url_for("auth.login_email_resend")
         else:
             resend_url = url_for("auth.request_email_verification")
     if back_url is None:
@@ -338,6 +390,8 @@ def _render_email_verification(
             back_url = url_for("auth.register")
         elif change_mode:
             back_url = url_for("portal.security")
+        elif login_mode:
+            back_url = url_for("auth.login")
         else:
             back_url = url_for("portal.profile")
     return render_template(
@@ -533,12 +587,51 @@ def login():
             and not locked
             and password_ok
         ):
-            if user.totp_enabled:
+            session.pop("preauth_email_pending", None)
+            if _login_email_verification_required(user):
+                try:
+                    _deliver_email_challenge(
+                        "login_verification",
+                        user.email,
+                        "account",
+                        user_id=user.id,
+                        fingerprint_scope="login-verification",
+                    )
+                except ChallengeRateLimited:
+                    db.session.rollback()
+                    flash("登录验证码发送过于频繁，请稍后再试。", "error")
+                except MailDeliveryError as error:
+                    record_audit(
+                        "account.login.email.send",
+                        "user",
+                        str(user.id),
+                        f"result=failed;code={error.code}",
+                    )
+                    db.session.commit()
+                    flash("登录验证码发送失败，请稍后再试。", "error")
+                else:
+                    session["preauth_user_id"] = user.id
+                    session["preauth_remember"] = bool(form.remember.data)
+                    session["preauth_expires"] = int(
+                        (now + timedelta(minutes=10)).timestamp()
+                    )
+                    session["preauth_email_pending"] = True
+                    record_audit(
+                        "account.login.email.send",
+                        "user",
+                        str(user.id),
+                        "result=success",
+                    )
+                    db.session.commit()
+                    flash("检测到新设备或新网络登录，验证码已发送到绑定邮箱。", "info")
+                    return redirect(url_for("auth.login_email_verification"))
+            elif user.totp_enabled:
                 session["preauth_user_id"] = user.id
                 session["preauth_remember"] = bool(form.remember.data)
                 session["preauth_expires"] = int((now + timedelta(minutes=10)).timestamp())
                 return redirect(url_for("auth.two_factor"))
-            return redirect(_finish_login(user, bool(form.remember.data)))
+            else:
+                return redirect(_finish_login(user, bool(form.remember.data)))
         if user:
             user.failed_attempts += 1
             if user.failed_attempts >= current_app.config["LOGIN_LIMIT"]:
@@ -567,6 +660,8 @@ def service_terms():
 
 @auth_bp.route("/two-factor/", methods=["GET", "POST"])
 def two_factor():
+    if session.get("preauth_email_pending"):
+        return redirect(url_for("auth.login_email_verification"))
     user_id = session.get("preauth_user_id")
     expires = session.get("preauth_expires", 0)
     user = db.session.get(User, user_id) if user_id else None
@@ -591,6 +686,109 @@ def two_factor():
         oauth_client=_oauth_client_for_login(),
         auth_centered=True,
     )
+
+
+@auth_bp.route("/login/verify-email/", methods=["GET", "POST"])
+def login_email_verification():
+    if not administrator_exists():
+        return redirect(
+            url_for("auth.setup_administrator", next=request.args.get("next"))
+        )
+    if current_user.is_authenticated:
+        return redirect(url_for("portal.dashboard"))
+    user = _preauth_email_user()
+    if user is None:
+        flash("登录验证已经过期，请重新登录。", "info")
+        return redirect(url_for("auth.login"))
+    challenge = _latest_email_challenge(
+        "login_verification",
+        user.email,
+        user_id=user.id,
+    )
+    form = EmailVerificationForm()
+    if form.validate_on_submit():
+        if challenge is None:
+            flash("请先重新发送邮箱验证码。", "error")
+            return redirect(url_for("auth.login_email_verification"))
+        result = consume_email_challenge(
+            challenge.public_id,
+            "login_verification",
+            form.code.data,
+        )
+        if result.verified:
+            session.pop("preauth_email_pending", None)
+            record_audit(
+                "account.login.email.verify",
+                "user",
+                str(user.id),
+                "result=success",
+            )
+            db.session.commit()
+            if user.totp_enabled:
+                return redirect(url_for("auth.two_factor"))
+            remember = bool(session.get("preauth_remember", False))
+            _clear_preauth()
+            return redirect(_finish_login(user, remember))
+        db.session.commit()
+        messages = {
+            "expired": "验证码已经过期，请重新发送。",
+            "locked": "验证码已失效或尝试次数已用完，请重新发送。",
+            "consumed": "验证码已经使用，请重新发送。",
+            "invalid": "验证码不正确，请检查后重试。",
+        }
+        flash(messages.get(result.status, "验证码无法使用，请重新发送。"), "error")
+        return redirect(url_for("auth.login_email_verification"))
+    if request.method == "POST":
+        flash(form.code.errors[0], "error")
+        return redirect(url_for("auth.login_email_verification"))
+    return _render_email_verification(
+        verification_mode="login_verification",
+        recipient=user.email,
+        challenge=challenge,
+        form=form,
+    )
+
+
+@auth_bp.post("/login/verify-email/resend/")
+def login_email_resend():
+    if not EmptyForm().validate_on_submit():
+        abort(400)
+    if current_user.is_authenticated:
+        return redirect(url_for("portal.dashboard"))
+    user = _preauth_email_user()
+    if user is None:
+        flash("登录验证已经过期，请重新登录。", "info")
+        return redirect(url_for("auth.login"))
+    try:
+        _deliver_email_challenge(
+            "login_verification",
+            user.email,
+            "account",
+            user_id=user.id,
+            fingerprint_scope="login-verification",
+        )
+    except ChallengeRateLimited as error:
+        db.session.rollback()
+        flash(f"发送过于频繁，请在 {error.retry_after} 秒后再试。", "error")
+    except MailDeliveryError as error:
+        record_audit(
+            "account.login.email.send",
+            "user",
+            str(user.id),
+            f"result=failed;code={error.code}",
+        )
+        db.session.commit()
+        flash(error.public_message, "error")
+    else:
+        record_audit(
+            "account.login.email.send",
+            "user",
+            str(user.id),
+            "result=success",
+        )
+        db.session.commit()
+        flash("新的登录验证码已经发送。", "success")
+    return redirect(url_for("auth.login_email_verification"))
 
 
 @auth_bp.route("/register/", methods=["GET", "POST"])

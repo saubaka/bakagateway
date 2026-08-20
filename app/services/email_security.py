@@ -18,7 +18,9 @@ from app.extensions import db
 from app.models import EmailChallenge, PendingEmailChange, PendingRegistration
 from app.security import new_token
 
-EMAIL_CHALLENGE_PURPOSES = frozenset({"register", "verify_email", "change_email", "password_reset"})
+EMAIL_CHALLENGE_PURPOSES = frozenset(
+    {"register", "verify_email", "change_email", "password_reset", "login_verification"}
+)
 
 
 class EmailSecurityError(RuntimeError):

@@ -206,6 +206,7 @@ class LoginLog(db.Model):
     identifier = db.Column(db.String(254), nullable=False, index=True)
     success = db.Column(db.Boolean, nullable=False)
     fingerprint = db.Column(db.String(64), nullable=False, index=True)
+    client_ip_digest = db.Column(db.String(64), index=True)
     reason = db.Column(db.String(80), nullable=False, default="")
     created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow, index=True)
     user = db.relationship("User")
@@ -288,7 +289,8 @@ class MailTemplate(db.Model):
             "'registration', "
             "'account_email_verification', "
             "'change_email', "
-            "'password_reset'"
+            "'password_reset', "
+            "'login_verification'"
             ")",
             name="ck_mail_template_key",
         ),
@@ -365,7 +367,8 @@ class EmailChallenge(db.Model):
     __tablename__ = "email_challenges"
     __table_args__ = (
         db.CheckConstraint(
-            "purpose IN ('register', 'verify_email', 'change_email', 'password_reset')",
+            "purpose IN ('register', 'verify_email', 'change_email', 'password_reset', "
+            "'login_verification')",
             name="ck_email_challenge_purpose",
         ),
         db.CheckConstraint("attempt_count >= 0", name="ck_email_challenge_attempt_count"),

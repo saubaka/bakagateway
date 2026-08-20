@@ -1026,7 +1026,7 @@ html.has-js .mail-policy-stage-card.is-complete.card.motion-card.is-card-visible
 .mail-policy-form .panel-heading{align-items:flex-start;gap:18px}
 .mail-policy-form .panel-heading>div{display:block;min-width:0}
 .mail-policy-form .panel-heading p{max-width:720px;margin:5px 0 0;color:var(--text-soft);font-size:14px;line-height:1.7}
-.mail-policy-option-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:20px 0 8px}
+.mail-policy-option-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:20px 0 8px}
 @keyframes mail-policy-option-arrive{
   from{opacity:0}
   to{opacity:1}
@@ -1050,6 +1050,7 @@ html.has-js .mail-policy-stage-card.is-complete.card.motion-card.is-card-visible
 }
 .mail-policy-option-card:nth-child(2){animation-delay:70ms}
 .mail-policy-option-card:nth-child(3){animation-delay:140ms}
+.mail-policy-option-card:nth-child(4){animation-delay:210ms}
 .mail-policy-option-card:hover{
   border-color:var(--blue-300);
   background:#fff;
@@ -1077,6 +1078,9 @@ html.has-js .mail-policy-stage-card.is-complete.card.motion-card.is-card-visible
 .mail-policy-security-heading{margin:25px 0 15px}
 .mail-policy-security-heading p{margin:5px 0 0;color:var(--text-soft);font-size:14px;line-height:1.7}
 .mail-policy-security-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media(max-width:1100px){
+  .mail-policy-option-grid{grid-template-columns:1fr 1fr}
+}
 @media(max-width:1000px){
   .mail-policy-stage-grid{grid-template-columns:1fr 1fr}
   .mail-policy-stage-card:last-child{grid-column:1/-1}

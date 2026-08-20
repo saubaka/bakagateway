@@ -209,6 +209,7 @@ def send_verification_code(
         "account_email_verification": "验证baka网关账号的当前邮箱",
         "change_email": "更换baka网关账号邮箱",
         "password_reset": "找回baka网关账号密码",
+        "login_verification": "在新设备或新网络验证baka网关账号登录",
     }
     if resolved_template is None or resolved_template not in actions:
         raise MailDeliveryError("invalid_configuration", "验证码邮件类型无效。")
