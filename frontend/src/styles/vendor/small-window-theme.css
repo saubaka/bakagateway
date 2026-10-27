@@ -1,0 +1,755 @@
+/*
+ * v1.36.5 - Small-window visual contract and first-run administrator guide
+ *
+ * This file is deliberately loaded after the historical application sheet.
+ * It is the final visual authority shared by the public site and the admin
+ * studio, so old feature styles cannot quietly reintroduce gradients, candy
+ * cards, browser-default controls or inconsistent radii.
+ */
+
+:root {
+  --fog-white: #f7f9fc;
+  --cloud-blue: #e5effb;
+  --petal-pink: #f7e5ed;
+  --silver-mist: #e9edf2;
+  --graphite-blue: #354052;
+  --sunny-blue: #526fa6;
+  --canvas: var(--fog-white);
+  --canvas-blue: var(--cloud-blue);
+  --surface: #fff;
+  --surface-soft: #fbfcfe;
+  --text: var(--graphite-blue);
+  --text-soft: #5f6b7d;
+  --text-faint: #778397;
+  --border: var(--silver-mist);
+  --border-strong: #d3dce7;
+  --blue-050: #f2f6fb;
+  --blue-50: #f2f6fb;
+  --blue-100: var(--cloud-blue);
+  --blue-200: #ccdaeb;
+  --blue-300: #afc5df;
+  --blue-500: var(--sunny-blue);
+  --blue-600: var(--sunny-blue);
+  --action-blue: var(--sunny-blue);
+  --action-blue-hover: #465f90;
+  --action-blue-ink: #fff;
+  --radius-sm: 9px;
+  --radius-control: 13px;
+  --radius-md: 14px;
+  --radius-card: 20px;
+  --radius-lg: 20px;
+  --radius-panel: 28px;
+  --radius-xl: 30px;
+  --shadow-xs: 0 1px 2px rgba(53, 64, 82, .045);
+  --shadow-sm: 0 9px 24px rgba(70, 91, 122, .07);
+  --shadow-md: 0 16px 38px rgba(70, 91, 122, .11);
+  --shadow-float: 0 24px 58px rgba(70, 91, 122, .15);
+  --ease: cubic-bezier(.2, .78, .22, 1);
+  --spring: cubic-bezier(.2, .86, .24, 1.08);
+  --motion-enter: 460ms;
+  --motion-hover: 170ms;
+  --motion-press: 105ms;
+  --motion-card: 220ms;
+  --motion-panel: 280ms;
+  --font-reading: "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", SimSun, serif;
+}
+
+html,
+body {
+  background: var(--fog-white) !important;
+  color: var(--graphite-blue);
+}
+
+body {
+  background-image: none !important;
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--graphite-blue);
+  letter-spacing: -.025em;
+}
+
+a:not(.button):not(.icon-button) {
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+}
+
+.text-link,
+.article-content a,
+.article a,
+.site-footer a {
+  color: var(--sunny-blue);
+  text-decoration: none;
+}
+
+.text-link:hover,
+.article-content a:hover,
+.article a:hover,
+.site-footer a:hover {
+  color: #465f90;
+}
+
+/* Quiet paper surfaces. Large content areas stay flat; only interactive
+   components receive a small amount of tactile depth. */
+:where(
+  .card,
+  .admin-panel,
+  .admin-section,
+  .admin-form,
+  .component-showcase,
+  .filter-card,
+  .toc,
+  .article,
+  .profile-card,
+  .friend-board,
+  .guestbook,
+  .comments,
+  .editor-sidebar-widget,
+  .system-fact-card,
+  .seo-panel,
+  .seo-preview-card,
+  .auth-card,
+  .message-card,
+  .comment-card,
+  .moderation-message-card,
+  .account-panel,
+  .account-section,
+  .managed-page-card,
+  .menu-editor-card,
+  .page-block-card,
+  .footer-column-card,
+  .admin-layout-parent,
+  .moderation-card
+) {
+  border-color: var(--silver-mist) !important;
+  border-radius: var(--radius-card);
+  background-color: #fff !important;
+  background-image: none !important;
+  box-shadow: var(--shadow-sm);
+}
+
+:where(.admin-panel, .admin-section, .admin-form, .editor-sidebar-widget) {
+  border-radius: var(--radius-panel);
+}
+
+.auth-card--setup {
+  width: min(720px, 100%);
+}
+
+.setup-guide {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  margin: 18px 0 24px;
+  border: 1px solid var(--silver-mist);
+  border-radius: var(--radius-card);
+  background: var(--fog-white);
+}
+
+.setup-guide > p {
+  margin: 0;
+  color: var(--text-soft);
+  line-height: 1.7;
+}
+
+.setup-guide ol {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.setup-guide li {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 3px 10px;
+  align-items: center;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--silver-mist);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.setup-guide li[aria-current="step"] {
+  border-color: var(--blue-300);
+  background: var(--cloud-blue);
+}
+
+.setup-guide li > span {
+  display: grid;
+  grid-row: 1 / 3;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--silver-mist);
+  color: var(--graphite-blue);
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+
+.setup-guide li[aria-current="step"] > span {
+  background: #fff;
+  color: var(--sunny-blue);
+}
+
+.setup-guide strong,
+.setup-guide small {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.setup-guide strong {
+  color: var(--graphite-blue);
+  font-size: 14px;
+}
+
+.setup-guide small {
+  color: var(--text-faint);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .setup-guide ol {
+    grid-template-columns: 1fr;
+  }
+}
+
+:where(
+  .hero-card,
+  .hero-story,
+  .featured-note,
+  .showcase-card,
+  .project-showcase,
+  .home-cta,
+  .home-about-collage,
+  .now-card,
+  .note-card,
+  .post-card,
+  .corner-card,
+  .moment-note,
+  .content-state,
+  .home-config,
+  .home-admin-overview,
+  .home-editor-section,
+  .home-editor-section__heading,
+  .site-logo-preview,
+  .moderation-card__front-link,
+  .moderation-inline-editor
+) {
+  background-color: #fff !important;
+  background-image: none !important;
+}
+
+:where(.wash--pink, .wash--blue, .wash--mint, .wash--purple, .wash--yellow) {
+  background: #fff !important;
+}
+
+:where(.cover--blue, .cover--pink, .cover--purple, .list-post__cover, .post-card__cover) {
+  background: var(--cloud-blue) !important;
+  color: var(--sunny-blue) !important;
+}
+
+/* Controls use the requested 12-14px family instead of universal pills. */
+.button {
+  min-height: 44px;
+  padding-inline: 18px;
+  border-radius: var(--radius-control) !important;
+  font-weight: 800;
+  transition:
+    transform var(--motion-press) var(--spring),
+    color var(--motion-hover) var(--ease),
+    background-color var(--motion-hover) var(--ease),
+    border-color var(--motion-hover) var(--ease),
+    box-shadow var(--motion-hover) var(--ease);
+}
+
+.button--primary {
+  border-color: var(--sunny-blue) !important;
+  background: var(--sunny-blue) !important;
+  background-image: none !important;
+  box-shadow: 0 8px 20px rgba(82, 111, 166, .2) !important;
+  color: #fff !important;
+}
+
+.button--primary:hover {
+  border-color: #465f90 !important;
+  background: #465f90 !important;
+  box-shadow: 0 12px 26px rgba(82, 111, 166, .24) !important;
+}
+
+.button--soft {
+  border-color: var(--silver-mist) !important;
+  background: #fff !important;
+  background-image: none !important;
+  box-shadow: var(--shadow-xs) !important;
+  color: var(--graphite-blue) !important;
+}
+
+.button--soft:hover {
+  border-color: var(--blue-300) !important;
+  background: var(--cloud-blue) !important;
+}
+
+.button--danger,
+.button--pink,
+.button--mint,
+.button--cream {
+  background-image: none !important;
+}
+
+.button:hover,
+.icon-button:hover {
+  transform: translate3d(0, -1px, 0) !important;
+}
+
+.button:active,
+.icon-button:active {
+  transform: translate3d(0, 1px, 0) scale(.985) !important;
+  transition-duration: var(--motion-press) !important;
+}
+
+.icon-button {
+  border-color: var(--silver-mist) !important;
+  border-radius: var(--radius-control) !important;
+  background: #fff !important;
+  background-image: none !important;
+  box-shadow: var(--shadow-xs) !important;
+  color: var(--graphite-blue);
+}
+
+.icon-button:hover {
+  border-color: var(--blue-300) !important;
+  background: var(--cloud-blue) !important;
+}
+
+:where(.badge, .status-pill, .tag-cloud span, .system-version-number) {
+  border-radius: var(--radius-sm) !important;
+}
+
+.badge--blue,
+.status-pill--published,
+.status-pill--approved {
+  background: var(--cloud-blue) !important;
+  color: var(--sunny-blue) !important;
+}
+
+/* Native-looking fields are replaced globally, including compact admin
+   filters and editor side panels. */
+:where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="hidden"]),
+  textarea,
+  select
+) {
+  min-height: 44px;
+  border: 1px solid var(--silver-mist) !important;
+  border-radius: var(--radius-control) !important;
+  background: #fff !important;
+  background-image: none !important;
+  box-shadow: inset 0 1px 1px rgba(53, 64, 82, .025) !important;
+  color: var(--graphite-blue);
+  transition:
+    border-color var(--motion-hover) var(--ease),
+    box-shadow var(--motion-hover) var(--ease),
+    background-color var(--motion-hover) var(--ease);
+}
+
+:where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="hidden"]),
+  textarea,
+  select
+):focus {
+  border-color: var(--sunny-blue) !important;
+  box-shadow: 0 0 0 4px rgba(82, 111, 166, .12) !important;
+  outline: 0;
+  transform: none !important;
+}
+
+:where(input[type="checkbox"], input[type="radio"]) {
+  accent-color: var(--sunny-blue);
+}
+
+/* Public capsules keep their translucent identity; content surfaces do not
+   use broad blur. */
+.site-nav,
+.mobile-bottom-nav {
+  border-color: rgba(211, 220, 231, .92) !important;
+  background: rgba(255, 255, 255, .84) !important;
+  background-image: none !important;
+  box-shadow: var(--shadow-sm) !important;
+  backdrop-filter: blur(16px);
+}
+
+.nav-indicator,
+.mobile-nav-indicator {
+  border-color: var(--blue-200) !important;
+  background: rgba(229, 239, 251, .9) !important;
+  background-image: none !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), var(--shadow-xs) !important;
+}
+
+/* Administrator studio: the same material system, not a separate theme. */
+.admin-body {
+  --admin-surface: #fff;
+  --admin-line: var(--silver-mist);
+  background: var(--fog-white) !important;
+}
+
+.admin-shell {
+  gap: 0;
+  background: var(--fog-white);
+}
+
+.admin-sidebar {
+  border-color: var(--silver-mist) !important;
+  background: rgba(255, 255, 255, .96) !important;
+  background-image: none !important;
+  box-shadow: 10px 0 28px rgba(70, 91, 122, .055) !important;
+  backdrop-filter: none !important;
+}
+
+.admin-workspace,
+.admin-main {
+  background: transparent !important;
+}
+
+.admin-topbar {
+  min-height: 98px;
+  border-bottom: 1px solid var(--silver-mist);
+  background: rgba(247, 249, 252, .94);
+}
+
+.admin-topbar h1 {
+  font-size: clamp(28px, 3vw, 38px);
+}
+
+.admin-main {
+  padding-top: 24px;
+}
+
+.admin-main .button,
+.admin-main button,
+.admin-main input[type="submit"],
+.admin-main input[type="button"] {
+  white-space: nowrap !important;
+}
+
+.admin-brand {
+  border-bottom-color: var(--silver-mist) !important;
+}
+
+.admin-nav-group,
+.admin-subnav {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.admin-nav-group.is-open,
+.admin-subnav.is-open {
+  border-color: var(--silver-mist) !important;
+  background: var(--fog-white) !important;
+  background-image: none !important;
+}
+
+.admin-nav-group__toggle,
+.admin-subnav__toggle,
+.admin-nav .admin-nav-group__items a,
+.admin-nav .admin-subnav__items a {
+  box-shadow: none !important;
+}
+
+.admin-nav-group__toggle:hover,
+.admin-nav-group__toggle:focus-visible,
+.admin-subnav__toggle:hover,
+.admin-subnav__toggle:focus-visible,
+.admin-nav .admin-nav-group__items a:hover,
+.admin-nav .admin-nav-group__items a:focus-visible,
+.admin-nav .admin-subnav__items a:hover,
+.admin-nav .admin-subnav__items a:focus-visible {
+  border-color: transparent !important;
+  background: var(--cloud-blue) !important;
+  background-image: none !important;
+  color: var(--graphite-blue) !important;
+}
+
+.admin-nav-group__toggle.is-current,
+.admin-nav .admin-nav-group__items a.is-current,
+.admin-nav .admin-subnav__items a.is-current {
+  border-color: var(--blue-200) !important;
+  background: var(--cloud-blue) !important;
+  background-image: none !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .88) !important;
+  color: var(--graphite-blue) !important;
+}
+
+.admin-nav-group__toggle > .icon:first-child,
+.admin-nav-group__toggle.is-current > .icon:first-child,
+.admin-nav .admin-nav-group__items a::before {
+  color: var(--sunny-blue) !important;
+}
+
+.admin-nav .admin-nav-group__items a::before {
+  background: var(--sunny-blue) !important;
+}
+
+.admin-profile,
+.admin-menu-button {
+  background: #fff !important;
+}
+
+/* Dashboard and status cards lose the alternating candy decorations. */
+:where(.dashboard-widget, .dashboard-widget-option, .dashboard-fixed-grid > .dashboard-widget, .moderation-stat) {
+  border-color: var(--silver-mist) !important;
+  background: #fff !important;
+  background-image: none !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.moderation-stat::after,
+.dashboard-widget::after,
+.stat-card::after,
+.user-stat-card::after {
+  display: none !important;
+}
+
+.user-stat-card {
+  --user-stat-color: var(--cloud-blue) !important;
+}
+
+:where(.dashboard-widget__actions a, .dashboard-widget__timeline > div, .dashboard-widget__status > div, .dashboard-widget__status > a) {
+  border-color: var(--silver-mist) !important;
+  background: var(--fog-white) !important;
+  background-image: none !important;
+}
+
+.dashboard-widget .soft-icon,
+.dashboard-widget__hero-mark,
+.system-version-card__mark,
+.home-editor-section__heading > span {
+  background: var(--cloud-blue) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  color: var(--sunny-blue) !important;
+}
+
+.dashboard-widget__progress,
+.runtime-resource-meter {
+  background: var(--silver-mist) !important;
+  box-shadow: none !important;
+}
+
+.dashboard-widget__progress i,
+.runtime-resource-meter i {
+  background: var(--sunny-blue) !important;
+  background-image: none !important;
+}
+
+/* Lists and tables use spacing and separators instead of nested card noise. */
+.admin-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--silver-mist);
+  border-radius: var(--radius-card);
+  background: #fff;
+}
+
+.admin-table thead {
+  background: var(--fog-white) !important;
+  background-image: none !important;
+}
+
+.admin-table th,
+.admin-table td {
+  border-color: var(--silver-mist) !important;
+}
+
+.admin-table tbody tr:hover {
+  background: var(--cloud-blue) !important;
+}
+
+:where(.admin-post-row, .version-list article, .taxonomy-items > div, .interaction-row-card, .broadcast-history article) {
+  border-color: var(--silver-mist) !important;
+  background-image: none !important;
+}
+
+.moderation-card__content,
+.moderation-inline-editor,
+.home-admin-overview__stats span,
+.system-version-card dl div,
+.site-address-card > strong,
+.admin-layout-children article {
+  border-color: var(--silver-mist) !important;
+  background: var(--fog-white) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+.home-admin-jumpbar,
+.sticky-form-actions {
+  border-color: var(--silver-mist) !important;
+  background: rgba(255, 255, 255, .92) !important;
+  background-image: none !important;
+  box-shadow: var(--shadow-md) !important;
+  backdrop-filter: blur(12px);
+}
+
+.home-admin-jumpbar a,
+.moderation-filterbar a {
+  border-radius: var(--radius-sm) !important;
+}
+
+.home-admin-jumpbar a:hover,
+.home-admin-jumpbar a:focus-visible,
+.moderation-filterbar a:hover,
+.moderation-filterbar a.is-active {
+  background: var(--cloud-blue) !important;
+  color: var(--sunny-blue) !important;
+}
+
+/* Media, editor and preview workspaces use pale neutral wells. */
+:where(.media-card, .album-card, .photo-tile, .site-logo-preview, .image-crop-stage, .editor-canvas, .component-motion-live-preview__stage) {
+  border-color: var(--silver-mist) !important;
+  background-color: var(--fog-white) !important;
+  background-image: none !important;
+}
+
+.media-card,
+.album-card,
+.photo-tile {
+  border-radius: var(--radius-card) !important;
+  box-shadow: var(--shadow-xs) !important;
+}
+
+.media-card img,
+.album-card img,
+.photo-tile img {
+  border-radius: calc(var(--radius-card) - 1px) calc(var(--radius-card) - 1px) 0 0;
+}
+
+/* Shared floating layers. */
+.toast,
+dialog.modal,
+.app-system-dialog,
+.image-crop-dialog,
+.image-lightbox {
+  border-color: var(--silver-mist) !important;
+  background-color: #fff !important;
+  background-image: none !important;
+  box-shadow: var(--shadow-float) !important;
+}
+
+.toast {
+  border-radius: 20px !important;
+}
+
+dialog.modal,
+.app-system-dialog,
+.image-crop-dialog,
+.image-lightbox {
+  border-radius: 22px !important;
+}
+
+dialog.modal::backdrop,
+.image-crop-dialog::backdrop,
+.image-lightbox::backdrop {
+  background: rgba(53, 64, 82, .2);
+  backdrop-filter: blur(6px);
+}
+
+/* The physical line system remains the only entrance outline. */
+.motion-outline,
+.motion-outline__path {
+  color: var(--component-motion-color, var(--sunny-blue));
+}
+
+:where(.card--interactive, .post-card, .list-post, .project-card, .moment-entry, .album-card, .photo-tile, .friend-card, .message-card, .comment-card, .admin-panel, .admin-section) {
+  transition:
+    transform var(--motion-card) var(--spring),
+    border-color var(--motion-hover) var(--ease),
+    box-shadow var(--motion-card) var(--ease),
+    background-color var(--motion-hover) var(--ease);
+}
+
+@media (hover: hover) {
+  :where(.card--interactive, .post-card, .list-post, .project-card, .moment-entry, .album-card, .photo-tile, .friend-card, .message-card, .comment-card):hover {
+    border-color: var(--blue-300) !important;
+    box-shadow: var(--shadow-md) !important;
+    transform: translate3d(0, -2px, 0) !important;
+  }
+}
+
+@media (max-width: 1180px) {
+  .admin-topbar {
+    min-height: 84px;
+    padding-top: 20px;
+  }
+}
+
+@media (max-width: 760px) {
+  body {
+    font-size: 15px;
+  }
+
+  .admin-topbar {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    min-height: 0;
+    padding-top: 18px;
+  }
+
+  .admin-topbar__actions {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 3px;
+  }
+
+  .admin-main {
+    padding-top: 18px;
+  }
+
+  :where(.admin-panel, .admin-section, .admin-form) {
+    border-radius: 20px;
+  }
+
+  .button {
+    min-height: 42px;
+    padding-inline: 15px;
+  }
+
+  .admin-table {
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-topbar h1 {
+    font-size: 28px;
+  }
+
+  .admin-main {
+    padding-inline: 14px;
+  }
+}
+
+html[data-motion="reduce"] *,
+html[data-performance="low"] * {
+  scroll-behavior: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+}

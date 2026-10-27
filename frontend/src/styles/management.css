@@ -1,0 +1,177 @@
+/* Management cards, fields and action layout. */
+.admin-search {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  margin: 20px 0;
+}
+.admin-search .field {
+  flex: 1 1 160px;
+  min-width: 0;
+}
+.admin-edit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.admin-edit-grid .admin-wide {
+  grid-column: 1/-1;
+}
+.account-page fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.account-page fieldset > .field + .field {
+  margin-top: 16px;
+}
+.admin-list-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 20px 0;
+  border-top: 1px solid var(--line-blue);
+}
+.admin-list-row > div:first-child {
+  flex: 1 1 250px;
+  min-width: 0;
+}
+.admin-list-row p,
+.admin-list-row h3,
+.admin-list-row li,
+.admin-records p {
+  overflow-wrap: anywhere;
+}
+.admin-list-row h3 {
+  font-size: 16px;
+  margin: 0;
+}
+.admin-list-row small {
+  font-size: 12px;
+  color: var(--text-soft);
+  font-weight: 400;
+}
+.admin-list-row p {
+  margin: 6px 0;
+}
+.admin-list-row details {
+  margin-top: 12px;
+  font-size: 13px;
+}
+.admin-list-row summary {
+  cursor: pointer;
+}
+.admin-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--text-soft);
+}
+.admin-records {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.admin-records li {
+  border-top: 1px solid var(--line-blue);
+  padding: 16px 0;
+}
+.admin-records span {
+  display: block;
+  color: var(--text-soft);
+  font-size: 12px;
+  margin-top: 6px;
+}
+.admin-scopes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.admin-scopes legend {
+  margin-bottom: 10px;
+}
+.admin-scopes label,
+.admin-check {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 13px;
+}
+.admin-check {
+  margin-top: 16px;
+}
+.admin-scopes input,
+.admin-check input {
+  accent-color: #6389ae;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+.admin-app-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 13px;
+  object-fit: cover;
+}
+.admin-client-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.admin-file {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.admin-file input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  width: 100%;
+  cursor: pointer;
+}
+.admin-file:focus-within {
+  outline: 2px solid var(--text-soft);
+  outline-offset: 3px;
+}
+.admin-file.is-disabled {
+  opacity: 0.5;
+}
+.admin-credentials {
+  border: 2px solid var(--line-blue);
+}
+.admin-credentials input,
+.admin-credentials textarea {
+  font-family: monospace;
+}
+@media (max-width: 600px) {
+  .admin-edit-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .admin-search .field {
+    flex-basis: 100%;
+  }
+  .admin-list-row > .button-row {
+    width: 100%;
+  }
+  .admin-pager {
+    align-items: flex-start;
+  }
+}
+.login-product-name,
+.login-footer p {
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+.login-page > .gateway-muted {
+  max-width: calc(100% - 40px);
+  overflow-wrap: anywhere;
+}

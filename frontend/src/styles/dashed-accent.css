@@ -1,0 +1,51 @@
+.line-outline-host,.dash-outline { position:absolute; inset:0; width:100%; height:100%; border-radius:inherit; pointer-events:none; }
+.line-outline-host { display:block; }.dash-outline { display:block; overflow:visible; z-index:2; }
+.dash-outline__piece { fill:none; stroke:var(--line-blue-strong); stroke-width:1; stroke-dasharray:none; stroke-linecap:round; transform-box:fill-box; transform-origin:center; animation:dash-contour-arrive 420ms cubic-bezier(.22,.85,.25,1) backwards; }
+.dash-part-0 { clip-path:polygon(0 0,100% 0,50% 50%); --fragment-x:0px; --fragment-y:-3px; }
+.dash-part-1 { clip-path:polygon(100% 0,100% 100%,50% 50%); --fragment-x:3px; --fragment-y:0px; }
+.dash-part-2 { clip-path:polygon(100% 100%,0 100%,50% 50%); --fragment-x:0px; --fragment-y:3px; }
+.dash-part-3 { clip-path:polygon(0 100%,0 0,50% 50%); --fragment-x:-3px; --fragment-y:0px; }
+.is-line-shifting .dash-outline__piece { animation:dash-fragment-travel 420ms cubic-bezier(.22,.85,.25,1) backwards; }
+.dock-navigation-highlight .dash-outline__piece, .folder-highlight .dash-outline__piece, .dock-active-pill .dash-outline__piece { animation:none; }
+@keyframes dash-contour-arrive { from { opacity:0; stroke-dashoffset:24; } to { opacity:1; stroke-dashoffset:0; } }
+@keyframes dash-contour-exit { from { opacity:1; stroke-dashoffset:0; } to { opacity:0; stroke-dashoffset:-18; } }
+@keyframes dash-fragment-travel { 0% { transform:none; opacity:1; stroke-dashoffset:0; } 28%,55% { transform:translate(var(--fragment-x),var(--fragment-y)); opacity:.6; stroke-dashoffset:8; } 100% { transform:none; opacity:1; stroke-dashoffset:0; } }
+dialog.modal { border-color:transparent!important; }
+dialog.modal > .dash-outline { border-radius:inherit; }
+dialog.modal.is-danger .dash-outline__piece { stroke:var(--danger-300); }
+dialog.modal.is-closing::backdrop { opacity:0!important; background:transparent!important; -webkit-backdrop-filter:none!important; backdrop-filter:none!important; transition:none!important; animation:none!important; }
+dialog.modal.is-closing { pointer-events:none; }
+dialog.modal.is-closing > .dash-outline .dash-outline__piece,.dock-menu.is-closing > .line-outline-host .dash-outline__piece { animation:dash-contour-exit 200ms ease-in both; }
+.dock-backdrop { animation:none; }
+.dock-menu .dock-compose { background:var(--surface); border-style:solid; }
+.dock-navigation-item:hover { background:transparent; outline:1px solid var(--line-blue); outline-offset:-2px; }
+.dock-active-pill,.dock-navigation-highlight { background:transparent!important; }
+.dock-reveal span { width:8px; height:8px; border:1px solid var(--line-blue-strong); border-radius:50%; background:var(--surface); }
+.dock-item:focus-visible,.dock-menu :is(button,a):focus-visible { outline-style:solid; }
+.button.button--primary,.button.button--primary:hover,
+.folder-item.is-current,.mail-row.is-current,.mail-row:has(input:checked),
+.admin-nav-item.is-active,.mail-page-links .router-link-active,
+.themed-option[aria-selected="true"],.themed-calendar__day[aria-pressed="true"],
+.recipient-suggestions__item.is-active,.password-rules li.is-valid,.badge--blue,.mail-capsule__item.is-current {
+  background:var(--surface)!important; background-image:none!important; border-style:solid!important; border-color:var(--line-blue-strong)!important;
+  color:var(--graphite-blue); transition:border-color 220ms ease,box-shadow 220ms ease,color 180ms ease;
+}
+.folder-item.is-current,.admin-nav-item.is-active,.recipient-suggestions__item.is-active,.themed-option[aria-selected="true"],.themed-calendar__day[aria-pressed="true"] { outline:1px solid var(--line-blue-strong); outline-offset:-2px; }
+.mail-list .mail-row.is-current,.mail-list .mail-row:has(input:checked) { transition:opacity 260ms ease,transform 420ms var(--ease),filter 260ms ease,background 180ms ease,border-color 220ms ease,box-shadow 220ms ease,color 180ms ease; }
+.folder-item:hover,.mail-row:hover,.admin-nav-item:hover,.recipient-suggestions__item:hover,
+.themed-control[aria-expanded="true"],.intro-demo-tabs button[aria-pressed="true"] { background:var(--surface)!important; outline:1px solid var(--line-blue); outline-offset:-2px; }
+.themed-control:focus-visible,.themed-popup button:focus-visible { outline-style:solid; }
+.folder-item__count { background:var(--surface); border:1px solid var(--line-blue); }
+.button.button--primary:hover { box-shadow:var(--shadow-sm)!important; }
+.reader-security:hover,.reader-subtle:hover,.themed-popup button:hover,.password-entry__toggle:hover,.themed-number-stepper button:hover { background:var(--surface)!important; outline:1px solid var(--line-blue); outline-offset:-2px; }
+#app :is(input,select,textarea):focus,#app :is(.button,.icon-button,input,select,textarea):focus-visible { border-style:solid!important; box-shadow:none!important; outline:1px solid var(--focus-line); outline-offset:3px; }
+#app :is(input[type="checkbox"],input[type="radio"]):checked { background:var(--surface)!important; border-style:solid!important; }
+.motion-outline__path,.intro-postal-path path { stroke-dasharray:none!important; }
+#app :is(.compact-empty,.file-drop,.toc-progress,.markdown-help,.hero-tags span,.planet-orbit,.orbit,.home-module-fixed-field strong,.friend-board__orbit,.dialog-preview-panel,.component-upload-preview),#app .moment-timeline::before,#app .dashboard-widget::after { border-style:solid; }
+.themed-popup,.recipient-suggestions { border-color:transparent; }
+.notification-stack-card .notification-capsule { border:1px solid var(--line-blue-strong); }
+.notification-stack-card.is-background .notification-capsule { background:var(--surface); }
+html:has(.mail-workspace)::before,html:has(.mail-workspace)::after { content:none!important; display:none!important; }
+@media(prefers-reduced-motion:reduce) { .dash-outline__piece { animation:none!important; transform:none!important; opacity:1; } }
+html:is([data-motion="reduce"],[data-performance="low"]) .dash-outline__piece { animation:none!important; transform:none!important; opacity:1; }
+[data-outline-box="padding"] { background-clip: padding-box !important; }

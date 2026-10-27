@@ -1,0 +1,53 @@
+:root {
+  --line-blue: #dceaf7;
+  --line-blue-strong: var(--line-blue);
+  --focus-line: var(--line-blue);
+  --danger-100: #fdeff1;
+  --danger-200: #fce6e9;
+  --danger-300: #f7d3da;
+  --danger-700: #b04560;
+  --border: var(--line-blue);
+  --border-strong: var(--line-blue-strong);
+  --silver-mist: var(--line-blue);
+  --blue-200: #d3e5f6;
+  --blue-300: var(--line-blue-strong);
+  --action-blue: #e5effb;
+  --action-blue-hover: #d9e9fa;
+  --action-blue-ink: var(--graphite-blue);
+}
+.button--primary,
+.button--primary:hover {
+  border-color: var(--line-blue-strong) !important;
+  background: var(--action-blue) !important;
+  color: var(--graphite-blue) !important;
+  box-shadow: var(--shadow-xs) !important;
+}
+.button--primary:hover { background: var(--action-blue-hover) !important; }
+.button:hover, .button:focus-visible,
+input:focus, select:focus, textarea:focus,
+.admin-nav-item.is-active, .admin-nav-item:hover {
+  border-color: var(--line-blue-strong) !important;
+}
+:focus-visible { outline-color: var(--focus-line) !important; }
+#main-content:focus, #main-content:focus-visible, .admin-logout-error:focus, .admin-logout-error:focus-visible { outline: none !important; }
+.motion-outline, .motion-outline__path {
+  --component-motion-color: var(--line-blue-strong);
+  color: var(--line-blue-strong) !important;
+}
+.motion-outline__path { stroke: var(--line-blue-strong) !important; }
+.window-symbol, .window-symbol::before, .window-symbol::after,
+.window-symbol i { border-color: var(--line-blue-strong) !important; }
+.window-symbol { color: var(--line-blue-strong) !important; }
+.button--loading i { border-color: var(--line-blue) !important; border-top-color: var(--line-blue-strong) !important; }
+#app :is(.button, .icon-button, input, select, textarea):focus-visible,
+#app :is(input, select, textarea):focus {
+  border-color: var(--line-blue-strong) !important;
+  box-shadow: 0 0 0 3px var(--cloud-blue) !important;
+}
+.button--danger, .button--danger:hover, .button--danger:focus-visible {
+  border-color: var(--danger-300) !important;
+  color: var(--danger-700) !important;
+  box-shadow: none !important;
+}
+.button--danger { background: var(--danger-100) !important; }
+.button--danger:hover:not(:disabled) { background: var(--danger-200) !important; }

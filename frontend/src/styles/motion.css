@@ -1,0 +1,69 @@
+.baka-route-enter-active {
+  animation: route-content-fade var(--motion-enter, 460ms) var(--ease) both;
+}
+
+.baka-route-leave-active {
+  transition:
+    opacity 150ms var(--ease),
+    transform 180ms var(--ease);
+}
+
+.baka-route-leave-to {
+  opacity: 0;
+  transform: translate3d(0, -4px, 0);
+}
+
+.motion-line-target > .motion-outline {
+  border-radius: inherit;
+}
+
+.motion-line-target[data-motion-state="settled"] {
+  opacity: 1;
+  transform: none;
+}
+
+html[data-motion="reduce"] .baka-route-enter-active,
+html[data-motion="reduce"] .baka-route-leave-active,
+html[data-performance="low"] .baka-route-enter-active,
+html[data-performance="low"] .baka-route-leave-active {
+  animation: none;
+  transition: none;
+}
+
+html[data-motion="reduce"],
+html[data-motion="reduce"] *,
+html[data-motion="reduce"] *::before,
+html[data-motion="reduce"] *::after,
+html[data-performance="low"],
+html[data-performance="low"] *,
+html[data-performance="low"] *::before,
+html[data-performance="low"] *::after {
+  scroll-behavior: auto !important;
+  animation-duration: .01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: .01ms !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html,
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .baka-route-enter-active,
+  .baka-route-leave-active {
+    animation: none;
+    transition: none;
+  }
+}
+html.is-motion-ready .motion-line-target .motion-outline__path,
+html.is-motion-ready .motion-line-target[data-motion-kind] .motion-outline__path { stroke-width: 1; }

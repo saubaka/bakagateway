@@ -1,0 +1,18 @@
+[project]
+name = "bakagateway-api"
+version = "0.7.0"
+description = "baka identity platform API"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+  "Flask>=3.1,<3.2",
+  "Flask-SQLAlchemy>=3.1,<3.2",
+  "Flask-Migrate>=4.1,<4.2",
+  "psycopg[binary]>=3.2,<4",
+  "gunicorn>=23,<24",
+  "cryptography>=46,<52",
+  "email-validator>=2.3,<3",
+  "Pillow>=13,<14",
+  "authlib>=1.6,<2",
+  "requests>=2.32,<3",
+    "joserfc>=1.7,<2",
+]

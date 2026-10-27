@@ -1,0 +1,39 @@
+dialog.modal { box-sizing:border-box; max-width:calc(100vw - 32px); max-height:calc(100vh - 32px); max-height:calc(100dvh - 32px); margin:auto; overflow:auto; border-color:var(--line-blue); background:var(--surface); }
+dialog.modal :is(form,.field,.button-row,.modal__header) { min-width:0; box-sizing:border-box; }
+dialog.modal :is(input,textarea,select) { max-width:100%; box-sizing:border-box; }
+dialog.modal .modal__header { align-items:center; gap:12px; }
+dialog.modal .modal__header h2 { min-width:0; overflow-wrap:anywhere; font-size:20px; line-height:1.4; }
+dialog.modal .modal__header > button { flex:none; }
+dialog.modal .button-row { flex-wrap:wrap; gap:8px; }
+dialog.modal.compose-dialog { --dialog-width:760px; height:min(780px,calc(100vh - 32px)); height:min(780px,calc(100dvh - 32px)); padding:0; border-radius:24px; overflow:hidden; }
+dialog.compose-dialog[open] { display:grid; grid-template-rows:auto minmax(0,1fr); }
+dialog.modal.compose-dialog[data-compose-viewport] {
+  --compose-surface-height:min(780px,calc(var(--compose-visible-height) - 32px));
+  height:var(--compose-surface-height); max-height:var(--compose-surface-height);
+  top:calc(var(--compose-visible-top) + (var(--compose-visible-height) - var(--compose-surface-height))/2);
+  bottom:auto; margin-top:0; margin-bottom:0;
+}
+.compose-dialog > .modal__header { flex:none; padding:20px 24px 16px; border-bottom:1px solid var(--line-blue); margin:0; }
+.compose-dialog .compose-form { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); min-height:0; overflow-y:auto; overscroll-behavior:contain; padding:20px 24px 24px; gap:16px; margin:0; }
+.compose-form .field--wide,.compose-form .compose-grid__row,.compose-form .button-row { grid-column:1/-1; }
+.compose-form .compose-grid__row { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+.compose-form .field { gap:7px; margin:0; min-width:0; }.compose-form .field__label { font-size:12px; line-height:1.5; }
+.compose-form textarea { min-height:clamp(140px,26dvh,280px); resize:vertical; line-height:1.75; }
+.compose-form .compose-save-state { margin:0; padding:6px 0; font-size:11px; line-height:1.7; overflow-wrap:anywhere; }
+.compose-form .button-row { padding-top:12px; border-top:1px solid var(--line-blue); margin:0; justify-content:flex-end; }
+.compose-form .recipient-suggestions { max-height:180px; margin-top:5px; border-color:var(--line-blue); }.compose-form .recipient-suggestions__item { flex-wrap:wrap; overflow-wrap:anywhere; }
+dialog.baka-confirm-dialog[open] { display:block; grid-template-columns:none; padding:0; }
+.baka-confirm-dialog .app-system-dialog__content { padding:24px; min-width:0; }.baka-confirm-dialog .app-system-dialog__content > p { margin:16px 0 20px; overflow-wrap:anywhere; }
+.baka-confirm-dialog .dialog-actions { justify-content:flex-end; margin-top:20px; }.baka-confirm-dialog .form-stack { gap:14px; }
+@media(max-width:560px) {
+  dialog.modal { max-width:calc(100vw - 24px); max-height:calc(100vh - 24px); max-height:calc(100dvh - 24px - env(safe-area-inset-bottom,0px)); }
+  dialog.modal.compose-dialog { height:min(840px,calc(100vh - 24px)); height:min(840px,calc(100dvh - 24px - env(safe-area-inset-bottom,0px))); }
+  dialog.modal.compose-dialog[data-compose-viewport] { --compose-surface-height:min(840px,calc(var(--compose-visible-height) - 24px - env(safe-area-inset-bottom,0px))); }
+  .compose-dialog > .modal__header { padding:16px 18px 12px; }
+  .compose-dialog .compose-form { padding:16px 18px 20px; grid-template-columns:minmax(0,1fr); gap:13px; }
+  .compose-form .compose-grid__row { grid-template-columns:minmax(0,1fr); gap:13px; }
+  .baka-confirm-dialog .app-system-dialog__content { padding:20px; }
+  .compose-form .button-row .button { flex:1 1 auto; }
+  .compose-form textarea { min-height:150px; }
+}
+@media(max-width:900px) { .compose-form :is(input,textarea) { font-size:16px; } }

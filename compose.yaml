@@ -1,0 +1,108 @@
+name: bakagateway
+
+x-api-environment: &api-environment
+  BG_ENV: ${BG_ENV:-local}
+  BG_PUBLIC_URL: ${BG_PUBLIC_URL:-http://localhost:5180}
+  BG_ALLOWED_HOSTS: ${BG_ALLOWED_HOSTS:-localhost,127.0.0.1,[::1]}
+  BG_SECRET_KEY_FILE: /run/secrets/app_key
+  BG_DATABASE_PASSWORD_FILE: /run/secrets/db_password
+  BG_DATABASE_HOST: db
+  BG_DATABASE_NAME: bakagateway
+  BG_DATABASE_USER: bakagateway
+  BG_TRUST_PROXY: "1"
+  BG_UPLOAD_DIR: /app/data/avatars
+  BG_SIGNING_KEY_DIR: /app/keys
+
+services:
+  keys:
+    image: ${BG_IMAGE_PREFIX:-bakagateway}-api:0.7.0
+    build:
+      context: .
+      dockerfile: deploy/api.Dockerfile
+      target: production
+    environment: *api-environment
+    secrets: [db_password, app_key]
+    volumes: [signing_keys:/app/keys]
+    command: [flask, --app, "app:create_app", oauth-keys-init]
+    restart: "no"
+  db:
+    image: ${BG_IMAGE_PREFIX:-bakagateway}-db:0.7.0
+    build:
+      context: .
+      dockerfile: deploy/db.Dockerfile
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_admin_password
+    secrets: [db_password, db_admin_password]
+    volumes: [database:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U bakagateway -d bakagateway"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  migrate:
+    image: ${BG_IMAGE_PREFIX:-bakagateway}-api:0.7.0
+    build:
+      context: .
+      dockerfile: deploy/api.Dockerfile
+      target: production
+    environment: *api-environment
+    secrets: [db_password, app_key]
+    depends_on:
+      db: {condition: service_healthy}
+    command: [flask, --app, "app:create_app", db, upgrade]
+    restart: "no"
+
+  api:
+    image: ${BG_IMAGE_PREFIX:-bakagateway}-api:0.7.0
+    build:
+      context: .
+      dockerfile: deploy/api.Dockerfile
+      target: production
+    environment: *api-environment
+    secrets: [db_password, app_key]
+    volumes: [uploads:/app/data,signing_keys:/app/keys]
+    depends_on:
+      db: {condition: service_healthy}
+      migrate: {condition: service_completed_successfully}
+      keys: {condition: service_completed_successfully}
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health/ready', timeout=4)"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    restart: unless-stopped
+
+  web:
+    image: ${BG_IMAGE_PREFIX:-bakagateway}-web:0.7.0
+    build:
+      context: .
+      dockerfile: deploy/web.Dockerfile
+      target: production
+    ports: ["${BG_BIND_ADDRESS:-127.0.0.1}:${BG_WEB_PORT:-5180}:8080"]
+    depends_on:
+      api: {condition: service_healthy}
+    healthcheck:
+      test: [CMD-SHELL, "wget -q -O /dev/null http://127.0.0.1:8080/api/health/ready"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+
+volumes:
+  database:
+  uploads:
+  signing_keys:
+
+secrets:
+  db_admin_password:
+    file: ${BG_SECRETS_DIR:-./.secrets}/db_admin_password
+  db_password:
+    file: ${BG_SECRETS_DIR:-./.secrets}/db_password
+  app_key:
+    file: ${BG_SECRETS_DIR:-./.secrets}/app_key

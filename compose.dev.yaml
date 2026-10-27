@@ -1,0 +1,21 @@
+# docker compose -f compose.yaml -f compose.dev.yaml up -d --build
+services:
+  api:
+    image: ${BG_IMAGE_PREFIX:-bakagateway}-api-dev:0.7.0
+    build:
+      target: dev
+    volumes:
+      - ./backend/app:/app/app:ro
+      - ./backend/migrations:/app/migrations:ro
+  web:
+    image: ${BG_IMAGE_PREFIX:-bakagateway}-web-dev:0.7.0
+    build:
+      target: dev
+    environment:
+      BG_API_PROXY: http://api:8000
+      CHOKIDAR_USEPOLLING: "true"
+    volumes:
+      - ./frontend/src:/app/src:ro
+      - ./frontend/index.html:/app/index.html:ro
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:8080/api/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]

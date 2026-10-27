@@ -1,0 +1,234 @@
+/* Personal pages share navigation, cards and fields. */
+.consent-app {
+  padding: 18px 0;
+  border-block: 1px solid var(--line-blue);
+  margin-bottom: 18px;
+}
+.consent-app h2 {
+  font-size: 20px;
+  margin: 0 0 12px;
+  overflow-wrap: anywhere;
+}
+.consent-app p {
+  font-size: 13px;
+  line-height: 1.8;
+  margin: 8px 0 0;
+  overflow-wrap: anywhere;
+}
+.consent-owner {
+  overflow-wrap: anywhere;
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+.consent-scope {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+}
+.consent-scope input {
+  width: 17px;
+  height: 17px;
+  flex: none;
+  margin-top: 3px;
+  accent-color: var(--graphite-blue);
+}
+.consent-scope span {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+.consent-scope strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+.consent-scope small {
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--text-soft);
+}
+.consent-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+}
+.consent-actions .button {
+  flex: 1 1 0;
+}
+.account-main {
+  min-width: 0;
+}
+.account-page {
+  display: grid;
+  gap: 20px;
+  max-width: 1100px;
+  min-width: 0;
+}
+.account-page .managed-page-card {
+  min-width: 0;
+}
+.account-page .panel-heading {
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.account-page .panel-heading p {
+  line-height: 1.7;
+}
+.account-page .detail-grid dd,
+.account-wrap {
+  overflow-wrap: anywhere;
+}
+.account-page .button-row {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.account-page .gateway-problem:focus {
+  outline: 2px solid var(--focus-line);
+  outline-offset: 4px;
+}
+.account-welcome {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+.account-welcome h2 {
+  margin: 10px 0;
+  overflow-wrap: anywhere;
+}
+.account-avatar {
+  width: 72px;
+  height: 72px;
+  flex: none;
+  overflow: hidden;
+  font-size: 28px;
+}
+.account-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.account-avatar-editor {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.account-avatar-editor .field {
+  max-width: 100%;
+  min-width: 0;
+}
+.account-avatar-editor input[type="file"] {
+  max-width: 100%;
+  height: auto;
+  padding: 10px;
+}
+.account-form {
+  width: 100%;
+  max-width: 480px;
+  margin-top: 20px;
+}
+.account-identity {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line-blue);
+}
+.account-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.account-shortcut {
+  text-decoration: none;
+}
+.account-shortcut h2 {
+  margin: 0 0 12px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 18px;
+}
+.account-shortcut h2 span {
+  color: var(--text-soft);
+}
+.account-shortcut p {
+  color: var(--text-soft);
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 0;
+}
+.account-shortcut:focus-visible {
+  outline: 2px solid var(--focus-line);
+  outline-offset: 3px;
+}
+.account-restart {
+  margin-top: 20px;
+  min-height: 32px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.account-device-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.account-device-row {
+  padding: 24px 0;
+  border-top: 1px solid var(--line-blue);
+}
+.account-device-row:last-child {
+  padding-bottom: 0;
+}
+.account-device-heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.account-device-heading h3 {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  margin: 0;
+  font-size: 16px;
+}
+.account-device-row > p {
+  overflow-wrap: anywhere;
+}
+.account-device-heading .button,
+.account-device-heading .badge {
+  margin-left: auto;
+}
+.account-empty {
+  padding: 24px 0;
+}
+.account-empty h3 {
+  margin: 0 0 12px;
+  font-size: 18px;
+}
+.account-empty p {
+  margin: 0;
+  color: var(--text-soft);
+  line-height: 1.8;
+}
+@media (max-width: 600px) {
+  .account-shortcuts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .account-welcome {
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .account-welcome .account-avatar {
+    width: 52px;
+    height: 52px;
+    font-size: 22px;
+  }
+  .account-page .button-row {
+    width: 100%;
+  }
+  .account-page .button-row .button {
+    flex: 1 1 auto;
+  }
+  .account-device-row .detail-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
